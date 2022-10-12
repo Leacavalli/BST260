@@ -92,6 +92,11 @@ polls <- polls_us_election_2016 |>
 
 We want to answer the question: is there a poll bias? Make a plot showing the spreads for each poll.
 
+```{r, eval=FALSE}
+head(polls)
+hist(polls$spread)
+
+```
 
 8\. The data does seem to suggest there is a difference. However, these
 data are subject to variability. Perhaps the differences we observe are due to chance. 
@@ -112,6 +117,10 @@ a. Is $\varepsilon_{i,j}$ = 0?
 b. How close are the $Y_{i,j}$ to $d$?
 c. Is $b_1 \neq b_2$?
 d. Are $b_1 = 0$ and $b_2 = 0$ ?
+
+```{r, eval=FALSE}
+
+```
 
 9\. In the right side of this model only $\varepsilon_{i,j}$ is a random variable. The other two are constants. What is the expected value of $Y_{1,j}$?
 
