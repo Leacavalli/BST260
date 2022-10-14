@@ -70,5 +70,6 @@ plot(hist(d$Time, breaks=1))
 
 ```{r, message=FALSE, echo=FALSE}
 tmp <- file.remove("murders.csv")
+tmp <- file.remove("fake.xlsx")
 ```
 
