@@ -1,44 +1,243 @@
+There is prob more detail than needed here but I just included my steps and thoughts for some of the problems :) - Rienna
 ## Discrete Probability Exercises
 
 1\. One ball will be drawn at random from a box containing: 3 cyan balls, 5 magenta balls, and 7 yellow balls. What is the probability that the ball will be cyan?
 
+$$P(\text{Cyan})=\frac{\text{Cyan}}{\text{Cyan + Magenta + Yellow}} = \frac{3}{3+5+7}$$
+
+$$P(\text{Cyan})=0.20$$
+
+```{r}
+cyan<-3
+magenta<-5
+yellow<-7
+
+balls<-sum(cyan, magenta, yellow)
+
+cyan/balls
+
+cyan <- 3
+magenta <- 5
+yellow <- 7
+
+
+```
 
 2\. What is the probability that the ball will not be cyan?
 
+**The probability that the ball will not be cyan would be the complement of the probability that the ball will be cyan.**
 
-3\. Instead of taking just one draw, consider taking two draws. You take the second draw without returning the first draw to the box. We call this sampling **without** replacement. What is the probability that the first draw is cyan and that the second draw is not cyan?
+$$P(\text{Cyan})^c=1-\frac{\text{Cyan}}{\text{Cyan + Magenta + Yellow}} = 1- \frac{3}{3+5+7}= 0.8$$
+
+```{r}
+1-(cyan/balls)
 
 
-4\. Now repeat the experiment, but this time, after taking the first draw and recording the color, return it to the box and shake the box. We call this sampling **with** replacement. What is the probability that the first draw is cyan and that the second draw is not cyan?
+```
 
+3\. Instead of taking just one draw, consider taking two draws. You take the second draw without returning the first draw to the box. We call this sampling **without** replacement. What is the probability that the first draw is cyan **and** that the second draw is not cyan?
+
+We are looking for a joint probability: P(First draw = Cyan AND Second draw != Cyan)**
+
+Because we are sampling without replacement, the probability that the first draw is cyan is not independent of the probability that the second draw is not cyan.
+
+We can use the law of total probability to find the joint probability as the probability that the first draw is cyan multiplied by the probability that the second draw is not cyan *given* the first draw is cyan.
+
+LOTP: For events A and B, their joint probability is equal to the marginal probability the conditional probability.
+
+P(A and B) = P(B\|A)P(A) = P(A\|B)P(B)
+
+$$P(\text{First draw is cyan AND Second draw isn't cyan})=P(\text{First draw is cyan})P(\text{Second draw isn't cyan | First draw is cyan})=\frac{0.2}{0.857} $$
+
+```{r}
+(cyan/balls)*(1-((cyan-1)/(cyan-1+magenta+yellow)))
+
+(cyan/balls)
+(1-((cyan-1)/(cyan-1+magenta+yellow)))
+
+
+```
+
+4\. Now repeat the experiment, but this time, after taking the first draw and recording the color, return it to the box and shake the box. We call this sampling **with** replacement. What is the probability that the first draw is cyan **and** that the second draw is not cyan?
+
+-   We are looking for a joint probability: P(First Card=Cyan AND Second Card = Not Cyan)
+
+-   Since we are sampling with replacement, these events are independent and we can multiply the probabilities. This is because under independence, the conditional probability will equal the marginal probability.
+
+-   For events A and B, if A and B are independent, then P(A\|B)=P(A) and P(B\|A)=P(B), since knowledge about A does not provide information about B, and knowledge about B does not provide information about A.
+
+-   Therefore, when writing P(A and B)=P(A\|B)P(B), we can substitute P(A\|B)=P(A) using independence, and the joint probability becomes P(A and B)=P(A)P(B).
+
+$$P(\text{Cyan})*P(\text{Cyan})^c= \frac{\text{Cyan}}{\text{Cyan + Magenta + Yellow}} *(1-\frac{\text{Cyan}}{\text{Cyan + Magenta + Yellow}}) = 0.2*0.8= 0.16$$
+
+```{r}
+(cyan/sum(cyan, magenta, yellow))*(1-(cyan/sum(cyan, magenta, yellow)))
+
+
+```
 
 5\. Two events $A$ and $B$ are independent if $\mbox{Pr}(A \mbox{ and } B) = \mbox{Pr}(A) P(B)$. Under which situation are the draws independent?
 
-a. You don't replace the draw.
-b. You replace the draw.
-c. Neither
-d. Both
+a.  You don't replace the draw. 
+*b. You replace the draw.*
+b.  Neither
+c.  Both
 
-6\. Say you’ve drawn 5 balls from the box, with replacement, and all have been yellow. What is the probability that the next one is yellow? 
+-   When you replace the draw, the probability of drawing a certain color does not depend on any other draws, i.e., if you draw a magenta on the first draw, this does not change the probability of drawing a magenta on the second draw.
+
+6\. Say you've drawn 5 balls from the box, with replacement, and all have been yellow. What is the probability that the next one is yellow?
+
+-   The probability that the next one is yellow is 0.467. Since we are sampling with replacement, the probability of one draw doesn't affect the next draw
+
+```{r}
+yellow/balls
+
+
+```
 
 7\. If you roll a 6-sided die six times, what is the probability of not seeing a 6?
 
+Let A be number of 6's you get when you roll a dice 6 times.
+
+We can use the binomial distribution, which is the sequence of independent Bernoulli trials. Each 'trial' is a roll of dice. 
+
+$$ P(A)= \binom{N}{k} \cdot p^kq^{N-k}$$
+
+$$p=\frac{1}{6} \quad q=1-p=\frac{5}{6} \quad N=6 \text{ (the number of trials}) \quad k=0 \text{ (the number of successes or how many 6's we want)} $$
+
+$$ P(A=0)= \binom{6}{0} \cdot \frac{1}{6}^0\frac{5}{6}^{6-0}$$
+
+```{r}
+choose(6,0)*((5/6)^6)
+```
+-   Another way to conceptualize this, would be to just think about it like the joint probability of not getting a 6 on all 6 rolls.
+
+-   Let $X_i$ be a random variable representing the possible values for each roll of the dice, where $X_i$ can take values from 1 to 6 (representing the values on the dice) and $i$ goes from 1 to 6 (representing the rolls).
+
+Since each roll is independent, we could then take the product of each probability of not getting a 6, 6 times.
+
+$$P(\text{A=0})=(1-P(X_1=6))*(1-P(X_2=6))*(1-P(X_3=6))*(1-P(X_4=6))*(1-P(X_5=6))*(1-P(X_6=6)) $$
+
+$$P(\text{A=0})=\frac{5}{6}*\frac{5}{6}*\frac{5}{6}*\frac{5}{6}*\frac{5}{6}*\frac{5}{6} $$
+We find that using both methods we end up with the same result, which is 0.335.
+
+
+
 8\. Two teams, say the Celtics and the Cavs, are playing a seven game series. The Cavs are a better team and have a 60% chance of winning each game. What is the probability that the Celtics win **at least** one game?
+
+**Response**
+If there are 7 games, then the probability of the Celtics winning at least 1 game, is 1- the probability that they do not win any games, which is the probability that they lose all the games
+
+Let Z be a binomial random variable that represents the number of games won. The probability that Z is greater or equal to 1 is 1- the probability that Z is 0.
+
+Let $X_i$ be a Bernoulli random variable representing winning a particular game, where $X_i$ can take values of 0 and 1, and $i$ can take values from 1 to 7. We can model the joint probability of every game being lost as the following:
+
+$$P(X \geq 1)= 1 - ((1-P(X_1=0))*(1-P(X_2=0)*(1-P(X_3=0)*(1-P(X_4=0)*(1-P(X_5=0)*(1-P(X_6=0)*(1-P(X_7=0)) $$
+$$P(X \geq 1)= 1 - (1-0.6)*(1-0.6)*(1-0.6)*(1-0.6)*(1-0.6)*(1-0.6)*(1-0.6) $$
+
+```{r}
+1 - ((1-0.6)*(1-0.6)*(1-0.6)*(1-0.6)*(1-0.6)*(1-0.6)*(1-0.6))
+```
+
+We could also use the PDF of the binomial distribution to calculate this. 
+
+$$ P(Z \ge 1) = 1-P(Z=0)= 1 - (\binom{7}{0} \cdot0.6^00.6^{7-0}= 0.998)$$
+
+These two methods provide equivalent results.
 
 9\. Create a Monte Carlo simulation to confirm your answer to the previous problem. Use `B <- 10000` simulations. Hint: use the following code to generate the results of the first four games:
 
 ```{r, eval=FALSE}
-celtic_wins <- sample(c(0,1), 4, replace = TRUE, prob = c(0.6, 0.4))
+# One method, writing a function to sample from the celtics winning, then a separate step to replicate 10,000 times 
+B<-10000
+any_wins<-function(){
+  celtic_wins <- sample(c(0,1), 7, replace = TRUE, prob = c(0.6, 0.4))
+  sum(celtic_wins)>=1}
+
+results<-replicate(B, any_wins())
+mean(results)
+
+
+# Another method, writing a function to do everything in one step
+prob_wins <- function(p,num){
+  B <- 10000
+  result <- replicate(B, {
+    b_win <- sample(c(1,0), 7, replace = TRUE, prob = c(p, 1-p))
+    sum(b_win)>=num
+  })
+  mean(result)
+}
+
+prob_wins(0.6, 1)
+
+
+
 ```
+
 The Celtics must win one of these 4 games.
 
 10\. Two teams, say the Cavs and the Warriors, are playing a seven game championship series. The first to win four games, therefore, wins the series. The teams are equally good so they each have a 50-50 chance of winning each game. If the Cavs lose the first game, what is the probability that they win the series?
 
+
+```{r}
+# Assign a variable 'n' as the number of remaining games.
+n <- 6
+
+# Assign a variable `outcomes` as a vector of possible game outcomes, where 0 indicates a loss and 1 indicates a win for the Cavs.
+outcomes <- c(0,1)
+
+# There are 64 possible outcomes
+
+# Assign a variable `l` to a list of all possible outcomes in all remaining games. Use the `rep` function on `list(outcomes)` to create list of length `n`. 
+l <- rep(list(outcomes), n)
+
+# Create a data frame named 'possibilities' that contains all combinations of possible outcomes for the remaining games.
+#### expand.grid creates a data frame from all combinations of the supplied vectors or factors.
+#### this automatically creates a data frame for all the possible combinations of outcomes for the remaining games
+possibilities <- expand.grid(l)
+possibilities
+
+
+# Create a vector named 'results' that indicates whether each row in the data frame 'possibilities' contains enough wins for the Cavs to win the series.
+results <- rowSums(possibilities)>=4
+results
+
+# Calculate the proportion of 'results' in which the Cavs win the series. Print the outcome to the console.
+mean(results)
+```
+
+
+
+
+
 11\. Confirm the results of the previous question with a Monte Carlo simulation.
+
+```{r}
+
+prob_win <- function(p, games){
+  B <- 10000
+  result <- replicate(B, {
+    b_win <- sample(c(1,0), games, replace = TRUE, prob = c(1-p, p))
+    sum(b_win)>=4
+  })
+  mean(result)
+}
+
+prob_win(0.5, 6)
+```
+
+
 
 12\. Two teams, $A$ and $B$, are playing a seven game series. Team $A$ is better than team $B$ and has a $p>0.5$ chance of winning each game. Given a value $p$, the probability of winning the series for the underdog team $B$ can be computed with the following function based on a Monte Carlo simulation:
 
+Use the function `sapply` to compute the probability, call it `Pr`, of winning for `p <- seq(0.5, 0.95, 0.025)`. Then plot the result.
+
+
 ```{r, eval=FALSE}
+# Let's assign the variable 'p' as the vector of probabilities that team A will win.
+p <- seq(0.5, 0.95, 0.025)
+
+# Given a value 'p', the probability of winning the series for the underdog team B can be computed with the following function based on a Monte Carlo simulation:
 prob_win <- function(p){
   B <- 10000
   result <- replicate(B, {
@@ -47,41 +246,120 @@ prob_win <- function(p){
   })
   mean(result)
 }
+
+# Apply the 'prob_win' function across the vector of probabilities that team A will win to determine the probability that team B will win. Call this object 'Pr'.
+Pr <- sapply(p, prob_win)
+
+# Plot the probability 'p' on the x-axis and 'Pr' on the y-axis.
+plot(p, Pr)
+
 ```
 
-Use the function `sapply` to compute the probability, call it `Pr`, of winning for `p <- seq(0.5, 0.95, 0.025)`. Then plot the result.
 
 13\. Repeat the exercise above, but now keep the probability fixed at `p <- 0.75` and compute the probability for different series lengths: best of 1 game, 3 games, 5 games,... Specifically, `N <- seq(1, 25, 2)`. Hint: use this function:
 
 ```{r, eval = FALSE}
+
+# Given a value 'p', the probability of winning the series for the underdog team B can be computed with the following function based on a Monte Carlo simulation:
 prob_win <- function(N, p=0.75){
-  B <- 10000
-  result <- replicate(B, {
-    b_win <- sample(c(1,0), N, replace = TRUE, prob = c(1-p, p))
-    sum(b_win)>=(N+1)/2
-  })
-  mean(result)
-}
+      B <- 10000
+      result <- replicate(B, {
+        b_win <- sample(c(1,0), N, replace = TRUE, prob = c(1-p, p))
+        sum(b_win)>=(N+1)/2
+        })
+      mean(result)
+    }
+
+# Assign the variable 'N' as the vector of series lengths. 
+N <- seq(1, 25, by=2)
+
+# Apply the 'prob_win' function across the vector of series lengths to determine the probability that team B will win. Call this object `Pr`.
+Pr <- sapply(N, prob_win)
+
+# Plot the number of games in the series 'N' on the x-axis and 'Pr' on the y-axis.
+plot(N, Pr)
+
+
 ```
 
 ## Continuous Probability Exercises
 
-1\. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is 5 feet or shorter? 
+1\. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is 5 feet or shorter?
+
+We can use the `pnorm` function in R to obtain the probability to obtain values from the CDF of the normal distriution.
+
+The CDF is the function that defines the P(X<=x). 
+
+```{r}
+pnorm(5*12, mean=64, sd=3)
+```
 
 
-2\. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is 6 feet or taller? 
+2\. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is 6 feet or taller?
+
+
+To find the probability that someone is greater than 6 feet, we can do 1 - the CDF, which is 1 - P(X<=x). This would be equivalent to finding the probability of P(X>x)
+
+
+```{r}
+1-pnorm(6*12, mean=64, sd=3)
+
+```
+
 
 
 3\. Assume the distribution of female heights is approximated by a normal distribution with a mean of 64 inches and a standard deviation of 3 inches. If we pick a female at random, what is the probability that she is between 61 and 67 inches?
 
+P(61 < X < 67) can be found by finding the difference in the CDF for 67 inches and 61 inches.
+
+P(X<=67) - P(X<=61)
+
+```{r}
+
+pnorm(67, mean=64, sd=3)-pnorm(61, mean=64, sd=3)
+
+```
+
 
 4\. Repeat the exercise above, but convert everything to centimeters. That is, multiply every height, including the standard deviation, by 2.54. What is the answer now?
+
+We find that the answer remains the same, when we convert things from inches to centimeters. 
+```{r}
+
+pnorm(67*2.54, mean=64*2.54, sd=3*2.54)-pnorm(61*2.54, mean=64*2.54, sd=3*2.54)
+
+```
 
 
 5\. Notice that the answer to the question does not change when you change units. This makes sense since the answer to the question should not be affected by what units we use. In fact, if you look closely, you notice that 61 and 64 are both 1 SD away from the average. Compute the probability that a randomly picked, normally distributed random variable is within 1 SD from the average.
 
+This will also be the same, since when we look between 1 standard deviation of the normal distribution on either side, the probability will be 0.683.
 
-6\. To see the math that explains why the answers to questions 3, 4, and 5 are the same, suppose we have a random variable with average $m$ and standard error $s$. Suppose we ask the probability of $X$ being smaller or equal to $a$. Remember that, by definition, $a$ is $(a - m)/s$ standard deviations $s$ away from the average $m$. The probability is: 
+```{r}
+# Assign a variable 'female_avg' as the average female height.
+female_avg <- 64
+
+# Assign a variable 'female_sd' as the standard deviation for female heights.
+female_sd <- 3
+
+# To a variable named 'taller', assign the value of a height that is one SD taller than average.
+taller <- female_avg + female_sd
+
+# To a variable named 'shorter', assign the value of a height that is one SD shorter than average.
+shorter <- female_avg - female_sd
+
+# Calculate the probability that a randomly selected female is between the desired height range. Print this value to the console.
+
+pnorm(taller, female_avg,female_sd) - pnorm(shorter, female_avg,female_sd)
+
+pnorm((taller-female_avg)/female_sd)
+
+
+
+```
+
+
+6\. To see the math that explains why the answers to questions 3, 4, and 5 are the same, suppose we have a random variable with average $m$ and standard error $s$. Suppose we ask the probability of $X$ being smaller or equal to $a$. Remember that, by definition, $a$ is $(a - m)/s$ standard deviations $s$ away from the average $m$. The probability is:
 
 $$
 \mbox{Pr}(X \leq a)
@@ -95,19 +373,48 @@ $$
 
 The quantity on the left is a standard normal random variable. It has an average of 0 and a standard error of 1. We will call it $Z$:
 
-
-
 $$
 \mbox{Pr}\left(Z \leq \frac{a-m}{s} \right)
 $$
 
 So, no matter the units, the probability of $X\leq a$ is the same as the probability of a standard normal variable being less than $(a - m)/s$. If `mu` is the average and `sigma` the standard error, which of the following R code would give us the right answer in every situation:
 
-a. `mean(X<=a)`
-b. `pnorm((a - m)/s)`
-c. `pnorm((a - m)/s, m, s)`
-d. `pnorm(a)`
+a.  `mean(X<=a)`
+*b.  `pnorm((a - m)/s)`*
+c.  `pnorm((a - m)/s, m, s)` 
+d.  `pnorm(a)`
 
 7\. Imagine the distribution of male adults is approximately normal with an expected value of 69 and a standard deviation of 3. How tall is the male in the 99th percentile? Hint: use `qnorm`.
 
-8\. The distribution of IQ scores is approximately normally distributed.  The average is 100 and the standard deviation is 15. Suppose you want to know the distribution of the highest IQ across all graduating classes if 10,000 people are born each in your school district. Run a Monte Carlo simulation with `B=1000` generating 10,000 IQ scores and keeping the highest. Make a histogram.
+```{r}
+
+qnorm(0.99, mean=69, sd=3)
+
+```
+
+
+
+8\. The distribution of IQ scores is approximately normally distributed. The average is 100 and the standard deviation is 15. Suppose you want to know the distribution of the highest IQ across all graduating classes if 10,000 people are born each in your school district. Run a Monte Carlo simulation with `B=1000` generating 10,000 IQ scores and keeping the highest. Make a histogram.
+
+```{r}
+# The variable `B` specifies the number of times we want the simulation to run.
+B <- 1000
+
+# Use the `set.seed` function to make sure your answer matches the expected result after random number generation.
+set.seed(1)
+
+# Create an object called `highestIQ` that contains the highest IQ score from each random distribution of 10,000 people.
+highestIQ <- replicate(B, {
+    sim <- rnorm(10000,mean=100,sd=15)
+    max(sim)
+})
+
+# Make a histogram of the highest IQ scores.
+hist(highestIQ)
+
+
+
+```
+
+
+
