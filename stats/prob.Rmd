@@ -24,6 +24,8 @@ set.seed(1)
 outcomes <- c("heads", "tails")
 X <- ifelse(sample(outcomes, 1) == "heads", 1, 0)
 X
+
+#test
 ```
 
 Here `X` is a random variable: every time we select a new bead the outcome changes randomly.  See below:
