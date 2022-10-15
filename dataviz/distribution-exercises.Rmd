@@ -66,7 +66,7 @@ murders |> mutate(murder_rate = total/population * 10^5) |>
 
 Knowing that there are 51 states (counting DC) and based on this plot, how many states have murder rates larger than 10 per 100,000 people?
   
-  a. 1
+  a. 1 *maddy -- I think this one maybe?*
 b. 5
 c. 10
 d. 50 *Yes*
@@ -78,7 +78,7 @@ d. 50 *Yes*
   a. About half the states have murder rates above 7 per 100,000 and the other half below.
 b. Most states have murder rates below 2 per 100,000.
 c. All the states have murder rates above 2 per 100,000. *Yes*
-d. With the exception of 4 states, the murder rates are below 5 per 100,000.
+d. With the exception of 4 states, the murder rates are below 5 per 100,000. *maddy  -- maybe this one*
 
 
 7\. Below is a histogram of male heights in our `heights` dataset: 
@@ -90,7 +90,7 @@ heights |>
   geom_histogram(binwidth = 1, color = "black")
 ```
 
-Based on this plot, how many males are between 63.5 and 65.5?
+Based on this plot, how many males are between 63.5 and 65.5? *maddy -- i think in slack they said this is ~47; it looked like 50ish to me*
   
   a. 10
 b. 24
@@ -114,7 +114,7 @@ murders |> ggplot(aes(x=population/10^6)) +
 ```
 
 a. 0.02
-b. 0.15
+b. 0.15 *maddy -- I said this!*
 c. 0.50
 d. 0.55
 
@@ -136,7 +136,7 @@ Which of the following statements is true:
 a. It is impossible that they are from the same dataset.
 b. They are from the same dataset, but the plots are different due to code errors.
 c. They are the same dataset, but the first and second plot undersmooth and the third oversmooths.
-d. They are the same dataset, but the first is not in the log scale, the second undersmooths, and the third oversmooths.
+d. They are the same dataset, but the first is not in the log scale, the second undersmooths, and the third oversmooths.*maddy -- I think this one!*
 
 
 ## Part 2 exercises
@@ -161,7 +161,8 @@ How many measurements do we have for each?
   2\. Suppose we can't make a plot and want to compare the distributions side by side. We can't just list all the numbers. Instead, we will look at the percentiles. Create a five row table showing `female_percentiles` and `male_percentiles` with the 10th, 30th, 50th, 70th, & 90th percentiles for each sex. Then create a data frame with these two as columns.
 
 ```{r}
-
+#maddy answer
+df <- data.frame("female_percentiles" = quantile(female, probs = c(0.1,0.3,0.5,0.7,0.9)) , "male_percentiles" = quantile(male, probs = c(0.1,0.3,0.5,0.7,0.9)))
 ```
 
 
@@ -196,10 +197,11 @@ c. 0.50
 d. 0.25
 
 7\. If we use a log transformation, which continent shown above has the largest interquartile range?
+*maddy -- I think this looks like the Americas?*
   
   8\. Load the height data set and create a vector `x` with just the male heights:
   
-  ```{r, eval=FALSE}
+```{r, eval=FALSE}
 library(dslabs)
 data(heights)
 x <- heights$height[heights$sex=="Male"]
@@ -207,22 +209,71 @@ x <- heights$height[heights$sex=="Male"]
 
 What proportion of the data is between 69 and 72 inches (taller than 69, but shorter or equal to 72)? Hint: use a logical operator and `mean`.
 
+```{r}
+#maddy answer
+mean(x<=72) - mean(x<=69)
+#so 0.334 of the data is between these two values
+```
+
+
 9\. Suppose all you know about the data is the average and the standard deviation. Use the normal approximation to estimate the proportion you just calculated. Hint: start by computing the average and standard deviation. Then use the `pnorm` function to predict the proportions.
+```{r}
+#Maddy answers
+mu <- mean(x)
+sd <- sd(x)
+pnorm(72, mu,sd) - pnorm(69, mu, sd)
+```
 
 10\. Notice that the approximation calculated in question nine is very close to the exact calculation in the first question. Now perform the same task for more extreme values. Compare the exact calculation and the normal approximation for the interval (79,81]. How many times bigger is the actual proportion than the approximation?
+
+```{r}
+#Maddy answers
+#actual
+actual <- mean(x<=81) - mean(x<=79)
+#approximated answer
+approx <- pnorm(81,mu,sd)-pnorm(79,mu,sd)
+
+actual/approx
+#1.61 times bigger
+```
   
   11\. Approximate the distribution of adult men in the world as normally distributed with an average of 69 inches and a standard deviation of 3 inches. Using this approximation, estimate the proportion of adult men that are 7 feet tall or taller, referred to as _seven footers_. Hint: use the `pnorm` function.
+  
+```{r}
+#Maddy answer
+#inches in 7 feet is 7x12 = 84
+seven_footers <- 1-pnorm(84, 69, 3)
+#answer is 2.87e-7; very small!
+```
 
 12\. There are about 1 billion men between the ages of 18 and 40 in the world. Use your answer to the previous question to estimate how many of these men (18-40 year olds) are seven feet tall or taller in the world?
+
+```{r}
+#maddy answers
+seven_footers * 1e9
+#287
+```
   
   13\. There are about 10 National Basketball Association (NBA) players that are 7 feet tall or higher. Using the answer to the previous two questions, what proportion of the world's 18-to-40-year-old _seven footers_ are in the NBA?
+  
+```{r}
+#maddy answer
+10/287
+```
 
 14\. Repeat the calculations performed in the previous question for Lebron James' height: 6 feet 8 inches. There are about 150 players that are at least that tall.
+```{r}
+#Maddy answer
+#inches in 6ft8 = 6*12 + 8  = 80 inches
+lebrons <- seven_footers <- 1-pnorm(80, 69, 3)
+total_lebrons <- lebrons * 1e9
+150/total_lebrons
 
+```
 15\. In answering the previous questions, we found that it is not at all rare for a seven footer to become an NBA player. What would be a fair critique of our calculations:
   
   a. Practice and talent are what make a great basketball player, not height.
 b. The normal approximation is not appropriate for heights.
-c. As seen in question 10, the normal approximation tends to underestimate the extreme values. It's possible that there are more seven footers than we predicted.
+c. As seen in question 10, the normal approximation tends to underestimate the extreme values. It's possible that there are more seven footers than we predicted.*Maddy -- I think this one!*
 d. As seen in question 10, the normal approximation tends to overestimate the extreme values. It's possible that there are fewer seven footers than we predicted.
 
