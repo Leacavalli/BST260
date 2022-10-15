@@ -9,10 +9,10 @@
 2\. The payout for winning on green is \$17 dollars. This means that if you bet a dollar and it lands on green, you get \$17. Create a sampling model using sample to simulate the random variable $X$ for your winnings. Hint: see the example below for how it should look like when betting on red.
 
 ```{r}
-# example
+## example ##
 x <- sample(c(1,-1), 1, prob = c(9/19, 10/19))
-# exercise answer 
 
+# exercise answer 
 x <- sample(c(17,-1), 1, prob = c(1/19, 18/19))
 ```
 3\. Compute the expected value of $X$.
@@ -42,28 +42,28 @@ sum(S)
 
 6\. What is the expected value of $S$?
 ```{r}
-n * Ex
+mu <- n * Ex
 ```
 
 
 7\. What is the standard error of $S$?
 ```{r}
-SD_x* sqrt(n)
+se <-  SD_x*sqrt(n)
 ```
 
 8\. What is the probability that you end up winning money? Hint: use the CLT.
 
 ```{r}
-mean(S>0)
+1-pnorm(0, mu, se)
 ```
 
 9\. Create a Monte Carlo simulation that generates 1,000 outcomes of $S$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
 
 ```{r}
 n <- 1000
-B <- 10000
+B <- 1000
 roulette_winnings <- function(n){
-  X <- sample(c(-1,1), n, replace = TRUE, prob=c(9/19, 10/19))
+  X <- sample(c(17,-1), n, replace = TRUE,prob = c(1/19, 18/19))
   sum(X)
 }
 S <- replicate(B, roulette_winnings(n))
@@ -73,30 +73,75 @@ S <- replicate(B, roulette_winnings(n))
 
 10\. Now check your answer to 8 using the Monte Carlo result. 
 
+```{r}
+mean(S>0)
+```
+
+
 11\. The Monte Carlo result and the CLT approximation are close, but not that close. What could account for this?
 
-a. 1,000 simulations is not enough. If we do more, they match.
+a. 1,000 simulations is not enough. If we do more, they match. 
 b. The CLT does not work as well when the probability of success is small. In this case, it was 1/19. If we make the number of roulette plays bigger, they will match better.
+# YES
 c. The difference is within rounding error.
+# Also true but not the asnwer 
 d. The CLT only works for averages.
 
 
 12\. Now create a random variable $Y$ that is your average winnings per bet after playing off your winnings after betting on green 1,000 times.
 
+```{r}
+set.seed(1)
+n <- 1000
+X <- sample(c(17,-1), n, replace = TRUE,prob = c(1/19, 18/19))
+Y <- mean(X)
+```
+
 13\. What is the expected value of $Y$?
+```{r}
+Ex
+```
 
 14\. What is the standard error of $Y$?
 
-15\. What is the probability that you end up with winnings per game that are positive? Hint: use the CLT.
+```{r}
+se_avg <- SD_x/sqrt(n)
+```
 
+15\. What is the probability that you end up with winnings per game that are positive? Hint: use the CLT.
+```{r}
+1-pnorm(0, Ex, se_avg)
+```
 
 16\. Create a Monte Carlo simulation that generates 2,500 outcomes of $Y$. Compute the average and standard deviation of the resulting list to confirm the results of 6 and 7. Start your code by setting the seed to 1 with `set.seed(1)`.
 
+```{r}
+seed <- 1
+n <- 1000
+B <- 2500
+roulette_winnings <- function(n){
+  X <- sample(c(17,-1), n, replace = TRUE,prob = c(1/19, 18/19))
+  mean(X)
+}
+Y <- replicate(B, roulette_winnings(n))
+
+mean(Y)
+sd(Y)
+
+
+```
+
+
 17\. Now check your answer to 8 using the Monte Carlo result. 
+```{r}
+mean(Y>0)
+```
+
 
 18\. The Monte Carlo result and the CLT approximation are now much closer.  What could account for this?
 
-a. We are now computing averages instead of sums.
+a. We are now computing averages instead of sums. 
+# YES
 b. 2,500 Monte Carlo simulations is not better than 1,000.
 c. The CLT works better when the sample size is larger. We increased from 1,000 to 2,500.
 d. It is not closer. The difference is within rounding error.
