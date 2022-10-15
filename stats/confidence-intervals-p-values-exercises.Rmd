@@ -24,6 +24,8 @@ polls <- polls_us_election_2016 |>
 ```{r, eval=FALSE}
 N <- polls$samplesize[1]
 x_hat <- polls$rawpoll_clinton[1]/100
+
+
 ```
 
 Assume there are only two candidates and construct a 95% confidence interval for the election night proportion $p$. 
@@ -61,6 +63,9 @@ polls2 %>% summarise(mean(hit))
 ```
 
 5\. If these confidence intervals are constructed correctly, and the theory holds up, what proportion should include $p$?
+```{r, eval=FALSE}
+# 95%
+```
 
 
 6\. A much smaller proportion of the polls than expected produce confidence intervals containing $p$. If you look closely at the table, you will see that most polls that fail to include $p$ are underestimating. The reason for this is undecided voters, individuals polled that do not yet know who they will vote for or do not want to say. 
@@ -75,14 +80,42 @@ polls <- polls_us_election_2016 |>
 ```
 
 7\. Now repeat exercise 3, but for the difference.
+```{r, eval=FALSE}
+polls1 <- polls %>%
+  mutate(p_hat = (1+d_hat)/2,
+         moe = 2*1.96*sqrt(p_hat*(1-p_hat)/samplesize),
+         lower = d_hat - moe,
+         upper = d_hat + moe) %>%
+  select(pollster, enddate, d_hat, lower, upper)
+head(polls1)
 
+polls2 <- polls1 %>% mutate(hit = lower<=0.021 & upper>=0.021)
+```
 
 8\. Now repeat exercise 4, but for the difference.
+```{r, eval=FALSE}
+polls2 %>% summarise(mean(hit))
 
+```
 
 9\. Although the proportion of confidence intervals goes up substantially, it is still lower than 0.95. In the next chapter, we learn the reason for this. To motivate this, make a plot of the error, the difference between each poll's estimate and the actual $d=0.021$. Stratify by pollster.
+```{r, eval=FALSE}
+polls3 <- polls1 %>% mutate(error = d_hat-0.021)
+
+ggplot(polls3, aes(x=error, y=pollster))+
+  geom_point()
+
+```
 
 
 10\. Redo the plot that you made for exercise 9, but only for pollsters that took five or more polls.
 
+```{r, eval=FALSE}
+polls4 <- polls3 %>% 
+  group_by(pollster) %>% 
+  filter(n() > 4)
 
+ggplot(polls4, aes(x=error, y=pollster))+
+  geom_point()
+
+```
