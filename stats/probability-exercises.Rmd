@@ -383,7 +383,7 @@ So, no matter the units, the probability of $X\leq a$ is the same as the probabi
 
 a.  `mean(X<=a)`
 *b.  `pnorm((a - m)/s)`*
-c.  `pnorm((a - m)/s, m, s)` 
+c.  `pnorm((a - m)/s, m, s)` *maddy: I think this*
 d.  `pnorm(a)`
 
 7\. Imagine the distribution of male adults is approximately normal with an expected value of 69 and a standard deviation of 3. How tall is the male in the 99th percentile? Hint: use `qnorm`.
