@@ -102,6 +102,9 @@ $$
 \sqrt{p(1-p)/N + (1-p)(1-(1-p))/N} 
 = \sqrt{[p(1-p) + p(1-p)]/N}
 $$
+*maddy addition*
+This should simplify to $$\sqrt{2*p(1-p)/N}$$
+
 
 9\. If the actual $p=.45$, it means the Republicans are winning by a relatively large margin since $d= -.1$, which is a 10% margin of victory. In this case, what is the standard error of $2\hat{X}-1$ if we take a sample of $N=25$?
 
@@ -110,6 +113,10 @@ N <- 25
 p <- 0.45
 sqrt(p*(1-p) + p*(1-p))/N
 
+#maddy comment: I think the N should be included in the square root here!
+#if we recalculate the SE with square rooted N:
+sqrt((p*(1-p) + p*(1-p))/N)
+#now the SE is 0.14, which is larger than d
 ```
 
 10\. Given the answer to 9, which of the following best describes your strategy of using a sample size of $N=25$?
@@ -121,5 +128,6 @@ d.  Because we don't know $p$, we have no way of knowing that making $N$ larger 
 
 ```{r}
 # c ? 
+#Maddy: per my answer above, I think b is correct!
 
 ```
