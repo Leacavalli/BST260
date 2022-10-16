@@ -13,7 +13,9 @@ data(us_contagious_diseases)
 a. When we want to display percentages.
 b. When __ggplot2__ is not available.
 c. When I am in a bakery.
-d. Never. Barplots and tables are always better.
+d. Never. Barplots and tables are always better. 
+# correct answer is D. Rafa does not like pie charts 
+
 
 2\. What is the problem with the plot below:
 
@@ -34,7 +36,7 @@ b. The axis does not start at 0. Judging by the length, it appears Trump receive
 c. The colors should be the same.
 d. Percentages should be shown as a pie chart.
 
-  
+#b  
 3\. Take a look at the following two plots. They show the same information: 1928 rates of measles across the 50 states.
 
 ```{r measels-exercise, fig.height = 5, echo=FALSE}
@@ -63,7 +65,7 @@ a. They provide the same information, so they are both equally as good.
 b. The plot on the right is better because it orders the states alphabetically.
 c. The plot on the right is better because alphabetical order has nothing to do with the disease and by ordering according to actual rate, we quickly see the states with most and least rates.
 d. Both plots should be a pie chart.
-
+#c
 
 4\. To make the plot on the left, we have to reorder the levels of the states' variables.
 
@@ -87,13 +89,34 @@ Define these objects:
 
 ```{r, eval=FALSE}
 state <- dat$state
+#view top 5 rows. Here we confirm that the object state is in alphabetical order
+head(state)
 rate <- dat$count/dat$population*10000*52/dat$weeks_reporting
 ```
 
 Redefine the `state` object so that the levels are re-ordered. Print the new object `state` and its levels so you can see that the vector is not re-ordered by the levels.
-
+```{r}
+state <- reorder(state,rate)
+#confirm that the levels of the 'state' object are re-ordered but the vector itself has not been re-ordered
+head(state)
+levels(state)
+```
 
 5\. Now with one line of code, define the `dat` table as done above, but change the use mutate to create a rate variable and re-order the state variable so that the levels are re-ordered by this variable. Then make a barplot using the code above, but for this new `dat`.
+```{r}
+
+#I created a new 'd' table instead of redefining the dat table above to see the changes. 
+d <- dat %>%
+  mutate(rate = count/population*10000*52/weeks_reporting,
+        state = reorder(state,rate))
+
+#make barplot. 
+d |> ggplot(aes(state, rate)) +
+  geom_bar(stat="identity") +
+  coord_flip() 
+
+
+```
 
   
 6\. Say we are interested in comparing gun homicide rates across regions of the US. We see this plot:
@@ -119,15 +142,23 @@ b. The graph does not show standarad errors.
 c. It does not show all the data. We do not see the variability within a region and it's possible that the safest states are not in the West.
 d. The Northeast has the lowest average.
 
+# pretty sure the correct answer is c but it may be b?? UPDATE. Cannot be b bc the plot would should standard deviations...not standard errors which are population parameters
 
 7\. Make a boxplot of the murder rates defined as
 
 ```{r, eval = FALSE}
 data("murders")
 murders |> mutate(rate = total/population*100000)
+
+
 ```
 
 by region, showing all the points and ordering the regions by their median rate.
+```{r}
+#make boxplot. Not sure what is meant by showing all the points
+murders |> mutate(region = reorder(region, rate, FUN = median)) |>ggplot(aes(x=region,y=rate, fill=region)) + geom_boxplot() 
+
+```
 
 
 8\. The plots below show three continuous variables. 
@@ -165,4 +196,4 @@ b. There must be an error in the code.
 c. The colors confuse us.
 d. Scatterplots should not be used to compare two variables when we have access to 3.
 
-
+#a

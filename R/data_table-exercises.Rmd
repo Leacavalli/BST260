@@ -19,6 +19,8 @@ Remember you can add columns like this:
 
 ```{r, eval=FALSE}
 murders[, population_in_millions := population / 10^6]
+
+head(murders)
 ```
 
 
@@ -27,6 +29,8 @@ Add a murders column named `rate` with the per 100,000 murder rate as in the exa
 ```{r}
 #maddy answer
 murders[, rate := total / population * 10^5]
+
+head(murders)
 ```
 
 
@@ -35,7 +39,11 @@ murders[, rate := total / population * 10^5]
 ```{r}
 #maddy answer
 murders <- murders[order(rate, decreasing = TRUE)] 
+head(murders)
+
+#adds new column rank to the table
 murders[, rank := order(-rate)]
+head(murders)
 ```
 
 
@@ -80,6 +88,9 @@ Create a new data frame called `no_south` that removes states from the South reg
 ```{r}
 #maddy answer
 no_south <- murders[region != "South"] 
+
+nrow(no_south)
+#there are 34 states that are not in the South region
 ```
 
 
@@ -109,6 +120,8 @@ Make sure `murders` has been defined with `rate` and `rank` and still has all st
 ```{r}
 #maddy answer
 my_states <- murders[region %in% c("Northeast", "West") & rate < 1]
+
+my_states[, .(state, rate, rank)]
 ```
 
 
@@ -131,6 +144,12 @@ NHANES <- setDT(NHANES)
 #maddy answer
 twenties <- NHANES[AgeDecade == " 20-29" & Gender == "female",]
 ref <- c("avg" = mean(twenties$BPSysAve, na.rm=TRUE), "std" = sd(twenties$BPSysAve, na.rm=TRUE))
+ref
+
+#PBR. Another way to do it
+ref2 <- twenties[, .(average = mean(BPSysAve, na.rm=TRUE), standar_deviation = sd(BPSysAve, na.rm=TRUE))]
+ref2
+
 ```
 
 2\. Report the min and max values for the same group.

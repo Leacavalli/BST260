@@ -77,8 +77,8 @@ d. 50 *Yes*
   
   a. About half the states have murder rates above 7 per 100,000 and the other half below.
 b. Most states have murder rates below 2 per 100,000.
-c. All the states have murder rates above 2 per 100,000. *Yes*
-d. With the exception of 4 states, the murder rates are below 5 per 100,000. *maddy  -- maybe this one*
+c. All the states have murder rates above 2 per 100,000. *Yes* *I don't think so (eva)*
+d. With the exception of 4 states, the murder rates are below 5 per 100,000. *maddy  -- maybe this one; eva agrees*
 
 
 7\. Below is a histogram of male heights in our `heights` dataset: 
@@ -114,7 +114,7 @@ murders |> ggplot(aes(x=population/10^6)) +
 ```
 
 a. 0.02
-b. 0.15 *maddy -- I said this!*
+b. 0.15 *maddy -- I said this!, eva agrees*
 c. 0.50
 d. 0.55
 
@@ -179,7 +179,7 @@ tab |> ggplot(aes(x=continent, y=population/10^6)) +
   scale_y_continuous(trans = "log10", breaks = c(1,10,100,1000)) + ylab("Population in millions")
 ```
 
-Which continent has the country with the biggest population size?
+Which continent has the country with the biggest population size? *Asia*
   
   4\. What continent has the largest median population size?
   
@@ -265,7 +265,7 @@ seven_footers * 1e9
 ```{r}
 #Maddy answer
 #inches in 6ft8 = 6*12 + 8  = 80 inches
-lebrons <- seven_footers <- 1-pnorm(80, 69, 3)
+lebrons <- 1-pnorm(80, 69, 3)
 total_lebrons <- lebrons * 1e9
 150/total_lebrons
 
