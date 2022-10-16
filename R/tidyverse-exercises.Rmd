@@ -28,6 +28,7 @@ b.  `ChickWeight` is tidy: each observation (a weight) is represented by one row
 c.  `ChickWeight` is not tidy: we are missing the year column.
 d.  `ChickWeight` is tidy: it is stored in a data frame.
 
+#Paola: b is correct! I confirmed this in one of the labs. Each observation represents a measrue of weights so it is unique
 
 3\. Examine the built-in dataset `BOD`. Which of the following is true:
 
@@ -40,7 +41,7 @@ a. `BOD` is not tidy: it only has six rows.
 b. `BOD` is not tidy: the first column is just an index. # (Eva) I would think this is true, but unsure. 
 c. `BOD` is tidy: each row is an observation with two values (time and demand) *#not sure but maybe this?*
 d. `BOD` is tidy: all small datasets are tidy by definition.
-
+#Paola: the corect answer is c. Confirmed in lab
 
 4\. Which of the following built-in datasets is tidy (you can pick more than one):
 
@@ -51,6 +52,8 @@ d. `Formaldehyde` #tidy?
 e. `Orange` #Eva would say tidy too, but unsure. 
 f. `UCBAdmissions`
 
+#Paola --> DNase, Formaldehyde and orange are tidy. Here, each unique measurement is tidy.
+#UCBAdmission, BJsales, EuStockMarkets are not tidy
 
 
 ## Manipulating data frames
