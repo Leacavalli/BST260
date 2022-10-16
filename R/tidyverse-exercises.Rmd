@@ -81,6 +81,9 @@ Use the function `mutate` to add a murders column named `rate` with the per 100,
 
 ```{r}
 murders <- murders |> mutate(rate = total / population *10^5)
+
+#another way to write it 
+murders <- mutate(murders, rate= total/population*10^4)
 ```
 
 
@@ -153,7 +156,7 @@ filter(murders, population < 5000000 & region == "Northeast")
 Make sure `murders` has been defined with `rate` and `rank` and still has all states. Create a table called `my_states` that contains rows for states satisfying both the conditions: it is in the Northeast or West and the murder rate is less than 1.  Use `select` to show only the state name, the rate, and the rank.
 
 ```{r}
-filter(murders, rate <=1 & region %in% c("West", "Northeast")) |> select(state,rate,rank)
+my_states <- filter(murders, rate <=1 & region %in% c("West", "Northeast")) |> select(state,rate,rank)
 ```
 
 
