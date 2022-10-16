@@ -145,6 +145,8 @@ $$ P(Z \ge 1) = 1-P(Z=0)= 1 - (\binom{7}{0} \cdot0.6^00.6^{7-0}= 0.998)$$
 
 These two methods provide equivalent results.
 
+*Maddy comments: when we did this in lab, which just did 1-0.6^4 because in a 7 game series, you win if you win 4 games. This yields a different result but I think is just a difference in understanding of how a 7-game series works ahah the math is beautiful*
+
 9\. Create a Monte Carlo simulation to confirm your answer to the previous problem. Use `B <- 10000` simulations. Hint: use the following code to generate the results of the first four games:
 
 ```{r, eval=FALSE}
