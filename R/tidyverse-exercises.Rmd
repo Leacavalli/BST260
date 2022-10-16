@@ -253,6 +253,11 @@ Hint: Use `filter` and `summarize` and use the `na.rm = TRUE` argument when comp
 ```{r}
 #maddy answer
 ref_avg <- NHANES |> filter(AgeDecade == " 20-29" & Gender == "female" ) |> summarize(average = mean(BPSysAve, na.rm = TRUE), sd = sd(BPSysAve, na.rm = TRUE)) |> pull(1)
+ref_avg
+
+#another way where you specify 'average' in pull 
+ref_avg <- NHANES |> filter(AgeDecade == " 20-29" & Gender == "female" ) |> summarize(average = mean(BPSysAve, na.rm = TRUE), sd = sd(BPSysAve, na.rm = TRUE)) |> pull(average)
+ref_avg
 ```
 
 3\. Now report the min and max values for the same group.
@@ -307,7 +312,7 @@ murders
 
 
 a. `murders` is in tidy format and is stored in a tibble.
-b. `murders` is in tidy format and is stored in a data frame. #I think this one
+b. `murders` is in tidy format and is stored in a data frame. #I think this one #paola: I agree
 c. `murders` is not in tidy format and is stored in a tibble.
 d. `murders` is not in tidy format and is stored in a data frame.
     
@@ -315,6 +320,7 @@ d. `murders` is not in tidy format and is stored in a data frame.
 
 ```{r}
 murders_tibble <- as_tibble(murders)
+murders_tibble
 ```
 
     
@@ -323,6 +329,9 @@ murders_tibble <- as_tibble(murders)
 ```{r}
 #maddy answer
 group_by(murders, region)
+
+#paola answer
+murders %>% group_by(region) %>% class()
 ```
 
 
@@ -356,5 +365,23 @@ compute_s_n <- function(p){
 s_n <- map_df(n, compute_s_n)
 s_n
 
-```
 
+#paola answer with annotated notes below
+num <- 1:100
+compute_s_n <- function(p){
+  x <- 1:p
+  tibble(n =p, s_n = sum(x))
+  }
+
+df <-  map_df(num, compute_s_n)
+df
+```
+# Here, p is not assigned a specific value. If the function is defined as p = 3, then x will be 1 through whatever value p is defined as later in the first entry of map_df
+
+STEPS to understand what is happenning below:
+1) num is defined as the numbers 1 through 100. 
+2) map_df will take the first value of num (1) and input it into the second entry which is a function. It will then take the second value of num which is 2 and input into the function. Each value of num will be used to define the function.
+3) Thus, say p=5, then
+n=5 while s_n = 1+2+3+4+5=15
+
+#map_df takes the first entry (num) and inputs them into the second entry (compute_s_n)
