@@ -28,6 +28,7 @@ b.  `ChickWeight` is tidy: each observation (a weight) is represented by one row
 c.  `ChickWeight` is not tidy: we are missing the year column.
 d.  `ChickWeight` is tidy: it is stored in a data frame.
 
+#Paola: b is correct! I confirmed this in one of the labs. Each observation represents a measrue of weights so it is unique
 
 3\. Examine the built-in dataset `BOD`. Which of the following is true:
 
@@ -40,7 +41,7 @@ a. `BOD` is not tidy: it only has six rows.
 b. `BOD` is not tidy: the first column is just an index. # (Eva) I would think this is true, but unsure. 
 c. `BOD` is tidy: each row is an observation with two values (time and demand) *#not sure but maybe this?*
 d. `BOD` is tidy: all small datasets are tidy by definition.
-
+#Paola: the corect answer is c. Confirmed in lab
 
 4\. Which of the following built-in datasets is tidy (you can pick more than one):
 
@@ -51,6 +52,8 @@ d. `Formaldehyde` #tidy?
 e. `Orange` #Eva would say tidy too, but unsure. 
 f. `UCBAdmissions`
 
+#Paola --> DNase, Formaldehyde and orange are tidy. Here, each unique measurement is tidy.
+#UCBAdmission, BJsales, EuStockMarkets are not tidy
 
 
 ## Manipulating data frames
@@ -78,6 +81,9 @@ Use the function `mutate` to add a murders column named `rate` with the per 100,
 
 ```{r}
 murders <- murders |> mutate(rate = total / population *10^5)
+
+#another way to write it 
+murders <- mutate(murders, rate= total/population*10^4)
 ```
 
 
@@ -150,7 +156,7 @@ filter(murders, population < 5000000 & region == "Northeast")
 Make sure `murders` has been defined with `rate` and `rank` and still has all states. Create a table called `my_states` that contains rows for states satisfying both the conditions: it is in the Northeast or West and the murder rate is less than 1.  Use `select` to show only the state name, the rate, and the rank.
 
 ```{r}
-filter(murders, rate <=1 & region %in% c("West", "Northeast")) |> select(state,rate,rank)
+my_states <- filter(murders, rate <=1 & region %in% c("West", "Northeast")) |> select(state,rate,rank)
 ```
 
 
@@ -247,6 +253,11 @@ Hint: Use `filter` and `summarize` and use the `na.rm = TRUE` argument when comp
 ```{r}
 #maddy answer
 ref_avg <- NHANES |> filter(AgeDecade == " 20-29" & Gender == "female" ) |> summarize(average = mean(BPSysAve, na.rm = TRUE), sd = sd(BPSysAve, na.rm = TRUE)) |> pull(1)
+ref_avg
+
+#another way where you specify 'average' in pull 
+ref_avg <- NHANES |> filter(AgeDecade == " 20-29" & Gender == "female" ) |> summarize(average = mean(BPSysAve, na.rm = TRUE), sd = sd(BPSysAve, na.rm = TRUE)) |> pull(average)
+ref_avg
 ```
 
 3\. Now report the min and max values for the same group.
@@ -301,7 +312,7 @@ murders
 
 
 a. `murders` is in tidy format and is stored in a tibble.
-b. `murders` is in tidy format and is stored in a data frame. #I think this one
+b. `murders` is in tidy format and is stored in a data frame. #I think this one #paola: I agree
 c. `murders` is not in tidy format and is stored in a tibble.
 d. `murders` is not in tidy format and is stored in a data frame.
     
@@ -309,6 +320,7 @@ d. `murders` is not in tidy format and is stored in a data frame.
 
 ```{r}
 murders_tibble <- as_tibble(murders)
+murders_tibble
 ```
 
     
@@ -317,6 +329,9 @@ murders_tibble <- as_tibble(murders)
 ```{r}
 #maddy answer
 group_by(murders, region)
+
+#paola answer
+murders %>% group_by(region) %>% class()
 ```
 
 
@@ -350,5 +365,23 @@ compute_s_n <- function(p){
 s_n <- map_df(n, compute_s_n)
 s_n
 
-```
 
+#paola answer with annotated notes below
+num <- 1:100
+compute_s_n <- function(p){
+  x <- 1:p
+  tibble(n =p, s_n = sum(x))
+  }
+
+df <-  map_df(num, compute_s_n)
+df
+```
+# Here, p is not assigned a specific value. If the function is defined as p = 3, then x will be 1 through whatever value p is defined as later in the first entry of map_df
+
+STEPS to understand what is happenning below:
+1) num is defined as the numbers 1 through 100. 
+2) map_df will take the first value of num (1) and input it into the second entry which is a function. It will then take the second value of num which is 2 and input into the function. Each value of num will be used to define the function.
+3) Thus, say p=5, then
+n=5 while s_n = 1+2+3+4+5=15
+
+#map_df takes the first entry (num) and inputs them into the second entry (compute_s_n)
