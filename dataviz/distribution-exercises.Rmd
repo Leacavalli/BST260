@@ -62,11 +62,15 @@ murders |> mutate(murder_rate = total/population * 10^5) |>
   ggplot(aes(murder_rate)) + 
   stat_ecdf() +
   ylab("F(a)") + xlab("a")
+
+
+#using this code we see the right answer is 1
+murders |> mutate(murder_rate = total/population * 10^5) |> arrange(-murder_rate)
 ```
 
 Knowing that there are 51 states (counting DC) and based on this plot, how many states have murder rates larger than 10 per 100,000 people?
   
-  a. 1 *maddy -- I think this one maybe?*
+  a. 1 *maddy -- I think this one maybe?* *Paola: I agree this is the correct answer)*
 b. 5
 c. 10
 d. 50 *Yes*
@@ -77,8 +81,8 @@ d. 50 *Yes*
   
   a. About half the states have murder rates above 7 per 100,000 and the other half below.
 b. Most states have murder rates below 2 per 100,000.
-c. All the states have murder rates above 2 per 100,000. *Yes* *I don't think so (eva)*
-d. With the exception of 4 states, the murder rates are below 5 per 100,000. *maddy  -- maybe this one; eva agrees*
+c. All the states have murder rates above 2 per 100,000. *Yes* *I don't think so (eva)* *Paola: checked using code and this is not correct*
+d. With the exception of 4 states, the murder rates are below 5 per 100,000. *maddy  -- maybe this one; eva agrees* *paola; agreed*
 
 
 7\. Below is a histogram of male heights in our `heights` dataset: 
@@ -91,11 +95,12 @@ heights |>
 ```
 
 Based on this plot, how many males are between 63.5 and 65.5? *maddy -- i think in slack they said this is ~47; it looked like 50ish to me*
-  
+
+#answer choices below are incorrect
   a. 10
 b. 24
 c. 34
-d. 100 *Yes*
+d. 100 
 
 8\. About what **percentage** are shorter than 60 inches?
   
