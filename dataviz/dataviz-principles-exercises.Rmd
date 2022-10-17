@@ -156,7 +156,7 @@ murders |> mutate(rate = total/population*100000)
 by region, showing all the points and ordering the regions by their median rate.
 ```{r}
 #make boxplot. Not sure what is meant by showing all the points
-murders |> mutate(region = reorder(region, rate, FUN = median)) |>ggplot(aes(x=region,y=rate, fill=region)) + geom_boxplot() 
+murders |> mutate(region = reorder(region, rate, FUN = median)) |>ggplot(aes(x=region,y=rate, fill=region)) + geom_boxplot() + geom_jitter()
 
 ```
 
