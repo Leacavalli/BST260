@@ -226,6 +226,8 @@ mean(x<=72) - mean(x<=69)
 #Maddy answers
 mu <- mean(x)
 sd <- sd(x)
+mu
+sd
 pnorm(72, mu,sd) - pnorm(69, mu, sd)
 ```
 
