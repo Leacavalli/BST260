@@ -101,6 +101,10 @@ $$
 
 \sqrt{p(1-p)/N + (1-p)(1-(1-p))/N} 
 = \sqrt{[p(1-p) + p(1-p)]/N}
+
+#maihan:
+SE[d]=SE[ \bar{X} - (1-\bar{X})] = SE[2\bar{X}]-SE[1]=2SE[\bar{X}]=2sqrt(p(1-p)/N)
+
 $$
 *maddy addition*
 This should simplify to $$\sqrt{2*p(1-p)/N}$$

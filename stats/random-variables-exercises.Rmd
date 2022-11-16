@@ -35,9 +35,11 @@ SD_x <- abs(b-a)*sqrt(p*(1-p))
 
 ```{r}
 set.seed(1)
-n <- 1000
+n <- 100000
 S <- sample(c(17,-1), n, replace = TRUE,prob = c(1/19, 18/19))
 sum(S)
+sum(S) / n
+
 ```
 
 6\. What is the expected value of $S$?
@@ -61,12 +63,15 @@ se <-  SD_x*sqrt(n)
 
 ```{r}
 n <- 1000
-B <- 1000
+B <- 10000
 roulette_winnings <- function(n){
   X <- sample(c(17,-1), n, replace = TRUE,prob = c(1/19, 18/19))
   sum(X)
 }
 S <- replicate(B, roulette_winnings(n))
+S
+mean(S)
+
 ```
 
 
