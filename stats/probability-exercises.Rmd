@@ -207,10 +207,14 @@ mean(results)
 
 
 
-
 11\. Confirm the results of the previous question with a Monte Carlo simulation.
 
 ```{r}
+cavs_win <- function() {
+  sixgames <- sample(c(0,1), 6, c(0.5, 0.5), replace = TRUE)
+  sum(sixgames)>=4
+}
+mean(replicate(10000, cavs_win()))
 
 prob_win <- function(p, games){
   B <- 10000
