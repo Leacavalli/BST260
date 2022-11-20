@@ -242,15 +242,15 @@ y <- dat$train$y
 fit <- lm(y ~ x, data = dat$train)
 y_hat <- predict(fit, newdata = dat$test)
 y_test<-as.numeric(as.character(dat$test$y))
-sqrt(mean((y_hat - y_test)^2))
+sqrt(mean((y_hat - y_test)^2)) # Calculate the RMSE to find the accuracy of linear regression
 #RMSE=1.053807
 
 # Logistic model
 fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
 y_hat_glm <- as.numeric(as.character(ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))))
 y_test<-as.numeric(as.character(dat$test$y))
-sqrt(mean((y_hat_glm - y_test)^2))
-#RMSE=0.382099
+mean(y_hat_glm == dat$test$y) # Prediction accuracy of the model
+
 ```
 
 
@@ -270,17 +270,18 @@ hist(rmse_linear)
 mean(rmse_linear)
 sd(rmse_linear)
 
-rmse_logistic<-replicate(100, {
+accuracy_logistic<-replicate(100, {
   dat <- make_data() 
   fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
   y_hat_glm <- as.numeric(as.character(ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))))
   y_test<-as.numeric(as.character(dat$test$y))
-  sqrt(mean((y_hat_glm - y_test)^2))
-
+  mean(y_hat_glm == dat$test$y)
 })
-hist(rmse_logistic)
-mean(rmse_logistic)
-sd(rmse_logistic)
+
+
+hist(accuracy_logistic)
+mean(accuracy_logistic)
+sd(accuracy_logistic)
 
 ```
 
