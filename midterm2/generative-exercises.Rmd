@@ -9,13 +9,96 @@ ind <- which(tissue_gene_expression$y %in% tissues)
 y <- droplevels(tissue_gene_expression$y[ind]) 
 x <- tissue_gene_expression$x[ind, ] 
 x <- x[, sample(ncol(x), 10)] 
+dim(x)
+length(y)
 ``` 
-Use the `train` function to estimate the accuracy of LDA. 
+Use the `train` function to estimate the accuracy of LDA.
+```{r}
+train_lda <- train(x,y, method='lda')
+train_lda$results[["Accuracy"]]
+
+```
+
+
 2\.  In this case, LDA fits two 10-dimensional normal distributions. Look at the fitted model by looking at the `finalModel` component of the result of train. Notice there is a component called `means` that includes the estimate `means` of both distributions. Plot the mean vectors against each other and determine which predictors (genes) appear to be driving the algorithm.  
+
+```{r}
+fin <- train_lda$finalModel
+means <- fin$means
+means
+names = rownames(means)
+means |> 
+  as.tibble() |>
+  mutate(type = names) |>
+  pivot_longer(cols = -type) |> 
+  pivot_wider(names_from = type) |>
+  ggplot(aes(x=cerebellum, y= hippocampus)) + 
+    geom_point() + 
+    geom_text(aes(label=name), nudge_y = 0.3)+
+  geom_abline(slope=1, intercept=0)
+
+#looks like TGFBR3 and F11R
+```
+
+
 3\. Repeat exercises 1 with QDA. Does it have a higher accuracy than LDA? 
+```{r}
+train_qda <- train(x,y, method='qda')
+train_qda$results[["Accuracy"]]
+#this is a bit lower than lda!
+```
+
 4\. Are the same predictors (genes) driving the algorithm? Make a plot as in exercise 2. 
-5\. One thing we see in the previous plot is that the value of predictors correlate in both groups: some predictors are low in both groups while others are high in both groups. The mean value of each predictor, `colMeans(x)`, is not informative or useful for prediction, and often for interpretation purposes it is useful to center or scale each column. This can be achieved with the `preProcessing` argument in `train`. Re-run LDA with `preProcessing = "scale"`. Note that accuracy does not change but see how it is easier to identify the predictors that differ more between groups in the plot made in exercise 4. 
+```{r}
+means2 <- train_qda$finalModel$means
+names2 = rownames(means2)
+means2 |> 
+  as.tibble() |>
+  mutate(type = names2) |>
+  pivot_longer(cols = -type) |> 
+  pivot_wider(names_from = type) |>
+  ggplot(aes(x=cerebellum, y= hippocampus)) + 
+    geom_point() + 
+    geom_text(aes(label=name), nudge_y = 0.3)+
+  geom_abline(slope=1, intercept=0)
+#yes looks like the same genes
+```
+
+5\. One thing we see in the previous plot is that the value of predictors correlate in both groups: some predictors are low in both groups while others are high in both groups. The mean value of each predictor, `colMeans(x)`, is not informative or useful for prediction, and often for interpretation purposes it is useful to center or scale each column. This can be achieved with the `preProcessing` argument in `train`. Re-run LDA with `preProcessing = "scale"`.
+```{r}
+#question should say preprocess not preprocessing
+train_lda2 <- train(x,y, method='lda', preProcess = "scale")
+train_lda2$results[["Accuracy"]]
+
+means3 <- train_lda2$finalModel$means
+names3 = rownames(means3)
+means3
+means3 |> 
+  as.tibble() |>
+  mutate(type = names3) |>
+  pivot_longer(cols = -type) |> 
+  pivot_wider(names_from = type) |>
+  ggplot(aes(x=cerebellum, y= hippocampus)) + 
+    geom_point() + 
+    geom_text(aes(label=name), nudge_y = 0.3)+
+  geom_abline(slope=1, intercept=0)
+#this does not make it easier to tell... in fact makes it harder to tell? this is what luli did though. 
+```
+
+Note that accuracy does not change but see how it is easier to identify the predictors that differ more between groups in the plot made in exercise 4. 
 6\. In the previous exercises we saw that both approaches worked well. Plot the predictor values for the two genes with the largest differences between the two groups in a scatterplot to see how they appear to follow a bivariate distribution as assumed by the LDA and QDA approaches. Color the points by the outcome. 
+```{r}
+#2 genes are TGBBR3 and F11R
+names <- rownames(x)
+x
+as.tibble(x) |> 
+  mutate(class = names) |>
+  select(class, TGFBR3, F11R) |>
+  ggplot(aes(TGFBR3, F11R, color = y)) + geom_point()
+```
+
+
+
 7\. Now we are going to increase the complexity of the challenge slightly: we will consider all the tissue types. 
 ```{r, eval=FALSE} 
 set.seed(1993) 
@@ -23,9 +106,30 @@ data("tissue_gene_expression")
 y <- tissue_gene_expression$y 
 x <- tissue_gene_expression$x 
 x <- x[, sample(ncol(x), 10)] 
+#maddy code
+train_lda3 <- train(x,y, method='lda')
 ``` 
 What accuracy do you get with LDA? 
-8\. We see that the results are slightly worse. Use the `confusionMatrix` function to learn what type of errors we are making. 
-9\. Plot an image of the centers of the seven 10-dimensional normal distributions. 
+```{r}
+train_lda3$results[["Accuracy"]]
+```
 
- 
+8\. We see that the results are slightly worse. Use the `confusionMatrix` function to learn what type of errors we are making. 
+```{r}
+y_hat <- predict(train_lda3, x)
+confusionMatrix(y_hat, y)
+#not as good for endometrium and kidney; they have low sensitivity 
+```
+
+9\. Plot an image of the centers of the seven 10-dimensional normal distributions. 
+```{r}
+x
+names <- rownames(x)
+names
+as.tibble(x) |> 
+  mutate(class = names)
+
+#i don't really understand what it is asking here, sorry!
+
+```
+
