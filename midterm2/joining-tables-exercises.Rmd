@@ -11,10 +11,27 @@ top |> as_tibble()
 ``` 
 But who are these players? We see an ID, but not the names. The player names are in this table 
 ```{r, eval=FALSE} 
-Master |> as_tibble() 
+library(dslabs)
+People |> as_tibble() 
+#use "People" not Master
+#nameFirst is first name, nameLast is last name, nameGiven is both with a space
 ``` 
 We can see column names `nameFirst` and `nameLast`. Use the `left_join` function to create a table of the top home run hitters. The table should have `playerID`, first name, last name, and number of home runs (HR).  Rewrite the object `top` with this new table. 
-2\. Now use the `Salaries` data frame to add each player's salary to the table you created in exercise 1. Note that salaries are different every year so make sure to filter for the year 2016, then use `right_join`. This time show first name, last name, team, HR, and salary. 
+```{r}
+top <- left_join(top, People, by="playerID") |> 
+  select(playerID, nameFirst, nameLast, HR)
+head(top)
+```
+
+
+2\. Now use the `Salaries` data frame to add each player's salary to the table you created in exercise 1. Note that salaries are different every year so make sure to filter for the year 2016, then use `right_join`. This time show first name, last name, team, HR, and salary.
+```{r}
+data(Salaries)
+sal <- Salaries |> filter(yearID == "2016") |> select(playerID, salary)
+right_join(top, sal, by= "playerID")
+#right join takes the row names from the second dataframe, but it doesn't seem to have a big effect here?
+```
+
 3\. In a previous exercise, we created a tidy version of the `co2` dataset: 
 ```{r, eval=FALSE} 
 co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) |>  
@@ -24,7 +41,36 @@ co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) |>
   mutate(month = as.numeric(month)) 
 ``` 
 We want to see if the monthly trend is changing so we are going to remove the year effects and then plot the results. We will first compute the year averages. Use the `group_by` and `summarize` to compute the average co2 for each year. Save in an object called `yearly_avg`. 
+```{r}
+yearly_avg <- co2_wide |> group_by(year) |> summarize(yearly_avg = mean(co2))
+head(yearly_avg)
+```
+
+
 4\. Now use the `left_join` function to add the yearly average to the `co2_wide` dataset. Then compute the residuals: observed co2 measure - yearly average. 
+```{r}
+comb <- left_join(co2_wide, yearly_avg, by = "year") |>
+  mutate(res = co2 - yearly_avg)
+comb
+```
+
+
 5\. Make a plot of the seasonal trends by year but only after removing the year effect. 
+
+```{r}
+library(ggplot2)
+#not totally sure what they're asking for here, will plot a few different things
+comb |> 
+  group_by(year, month) |>
+  ggplot(aes(month, res, group=year, color = year)) + geom_line() + facet_wrap(~year)
+
+comb |> 
+  group_by(year, month) |>
+  ggplot(aes(month, res, group=year, color = year)) + geom_line()
+
+
+  
+```
+
 
  
