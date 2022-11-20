@@ -9,36 +9,104 @@ colnames(x) <- paste("x", 1:ncol(x), sep = "_")
 y <- rbinom(n, 1, 0.5) |> factor() 
 x_subset <- x[ ,sample(p, 100)] 
 ``` 
-1\. Because `x` and `y` are completely independent, you should not be able to predict `y` using `x` with accuracy larger than 0.5. Confirm this by running cross validation using logistic regression to fit the model. Because we have so many predictors, we selected a random sample `x_subset`. Use the subset when training the model. Hint: use the caret `train` function. The `results` component of the output of `train` shows you the accuracy. Ignore the warnings. 
+1\. Because `x` and `y` are completely independent, you should not be able to predict `y` using `x` with accuracy larger than 0.5. Confirm this by running cross validation using logistic regression to fit the model. Because we have so many predictors, we selected a random sample `x_subset`. Use the subset when training the model. Hint: use the caret `train` function. The `results` component of the output of `train` shows you the accuracy. Ignore the warnings.
+
+```{r}
+#first load in caret
+library(caret)
+#make a dataframe of the xs and ys 
+dat <- data.frame(y, x_subset)
+#this is a dataframe wtih 1000 binomial Y values, at 100 random predictors of X; 1000 rows and 101 columns.
+mod <- train(y ~., method= 'glm', data = dat, family = "binomial", trControl = trainControl("cv")) #this uses caret train to fit a logistic regression and tells it to use cross validation. This means that it will break the data into chunks (10 is default), and test the accuracy on the chunk not included. This really impacts the accuracy; it gives a cross-validated measure of accuracy
+mod$results
+#accuracy is about 0.5, as expected
+#accuracy is the proportion of cases correctly predicted in the test set
+```
+
+
 2\. Now, instead of a random selection of predictors, we are going to search for those that are most predictive of the outcome. We can do this by comparing the values for the $y=1$ group to those in the $y=0$ group, for each predictor, using a t-test. You can perform this step like this: 
 ```{r, eval=FALSE} 
-devtools::install_bioc("genefilter") 
-install.packages("genefilter") 
+#devtools::install_bioc("genefilter") 
+#install.packages("genefilter") 
+#the above 2 lines were the installation of genefilter from the original exercise file, but in lab she said to install it a different way because that code doesn't work; instead you can do:
+#if (!require("BiocManager", quietly = TRUE))
+ #   install.packages("BiocManager")
+#BiocManager::install(version = "3.16")
+#BiocManager:: install("genefilter")
+#commenting out all the installation; it does take a bit of time
 library(genefilter) 
-tt <- colttests(x, y) 
+tt <- colttests(x, y) #runs t tests between all columns in x and y efficiently, outputs a 10000 x 3 matrix that has the statistic, dm (difference in group means) and p.value for each x column tested
 ``` 
 Create a vector of the p-values and call it `pvals`. 
+
+```{r}
+library(tidyverse)
+p_values <- tt |> pull(p.value)
+head(p_values)
+```
+
+
 3\. Create an index `ind` with the column numbers of the predictors that were "statistically significantly" associated with `y`. Use a p-value cutoff of 0.01 to define "statistically significant". How many predictors survive this cutoff? 
+
+```{r}
+ind <- which(p_values <= 0.01)
+length(ind) #108
+ind
+```
+
+
 4\. Re-run the cross validation but after redefining `x_subset` to be the subset of `x` defined by the columns showing "statistically significant" association with `y`. What is the accuracy now? 
+
+```{r}
+#take a new x_subset using only the columns in x from the indices specified in 'ind' which we know have the strongest association with y.
+x_subset_new <- x[,ind]
+dim(x_subset_new) #this now has 1000 rows and 108 columns from the 108 predictors with significant p values
+new_dat <- data.frame(y,x_subset_new)
+mod2 <- train(y ~., method = 'glm', data = new_dat, family = "binomial", trControl = trainControl("cv")) 
+#using the same code as above to fit and cross validate
+mod2$results
+```
+
 5\. Re-run the cross validation again, but this time using kNN. Try out the following grid of tuning parameters: `k = seq(101, 301, 25)`. Make a plot of the resulting accuracy. 
+```{r}
+mod3 <- train(y ~., method = 'knn', data = new_dat, tuneGrid = data.frame(k=seq(101,301,25)), trControl = trainControl("cv"))
+mod3$results
+ggplot(mod3)
+#or
+ggplot(mod3$results, aes(x=k, y = Accuracy)) + geom_point() + geom_line()
+```
+
 6\. In exercises 3 and 4, we see that despite the fact that `x` and `y` are completely independent, we were able to predict `y` with accuracy higher than 70%. We must be doing something wrong then. What is it? 
 a. The function `train` estimates accuracy on the same data it uses to train the algorithm. 
 b. We are over-fitting the model by including 100 predictors. 
-c. We used the entire dataset to select the columns used in the model. This step needs to be included as part of the algorithm. The cross validation was done **after** this selection. 
+c. We used the entire dataset to select the columns used in the model. This step needs to be included as part of the algorithm. The cross validation was done **after** this selection. *this one*
 d. The high accuracy is just due to random variability. 
-7\. Advanced. Re-do the cross validation but this time include the selection step in the cross validation. The accuracy should now be close to 50%. 
-8\. Load the `tissue_gene_expression` dataset. Use the `train` function to predict tissue from gene expression. Use kNN. What `k` works best? 
+7\. Advanced. Re-do the cross validation but this time include the selection step in the cross validation. The accuracy should now be close to 50%. *won't be on exam*
+
+8\. Load the `tissue_gene_expression` dataset. Use the `train` function to predict tissue from gene expression. Use kNN. What `k` works best? *won't be on exam*
 ```{r, include=FALSE} 
 knitr::opts_chunk$set(out.width = "70%", out.extra = NULL) 
 ``` 
 ## Exercises 
 1\. The `createResample` function can be used to create bootstrap samples. For example, we can create 10 bootstrap samples for the `mnist_27` dataset like this: 
 ```{r, eval=FALSE} 
+library(dslabs)
 set.seed(1995) 
-indexes <- createResample(mnist_27$train$y, 10) 
+indexes <- createResample(mnist_27$train$y, 10) #takes indices, draws with replacement
 ``` 
 How many times do `3`, `4`, and `7` appear in the first re-sampled index? 
+```{r}
+sum(indexes$Resample01 %in% c(3,4,7))
+```
+
 2\. We see that some numbers appear more than once and others appear no times. This has to be this way for each dataset to be independent. Repeat the exercise for all the re-sampled indexes. 
+```{r}
+x <- c()
+for(i in 1:10){x <- c(x, sum(indexes[[i]] %in% c(3,4,7)))}
+x
+```
+
+
 3\. Generate a random dataset like this: 
 ```{r, eval=FALSE} 
 y <- rnorm(100, 0, 1) 
@@ -50,9 +118,45 @@ qnorm(0.75)
 with the sample quantile: 
 ```{r, eval = FALSE} 
 quantile(y, 0.75) 
+#bootstrap is a powerful way to infer distribution, doesn't make assumptions but uses resampling to learn what the data distribution looks like
 ``` 
 Run a Monte Carlo simulation to learn the expected value and standard error of this random variable. 
+```{r}
+B <- 10000
+sim <- replicate(B, {
+  y <- rnorm(100,0,1)
+  quantile(y,0.75)
+})
+sim
+mean(sim)
+sd(sim)
+hist(sim)
+```
+
+
 4\. In practice, we can't run a Monte Carlo simulation because we don't know if `rnorm` is being used to simulate the data. Use the bootstrap to estimate the standard error using just the initial sample `y`. Use 10 bootstrap samples. 
+```{r}
+bs <- replicate(10, {
+  ind <- sample(1:100, 100 , replace=TRUE)
+  dat <- y[ind]
+  quantile(dat, 0.75)
+})
+
+mean(bs)
+sd(bs)
+```
+
+
 5\. Redo exercise 4, but with 10,000 bootstrap samples. 
+```{r}
+bs2 <- replicate(10000, {
+  ind <- sample(1:100, 100, replace=TRUE)
+  dat <- y[ind]
+  quantile(dat, 0.75)
+})
+
+mean(bs2)
+sd(bs2)
+```
 
  
