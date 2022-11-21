@@ -239,17 +239,16 @@ Compare the accuracy of linear regression and logistic regression.
 y <- dat$train$y 
 
 # Linear model
-fit <- lm(y ~ x, data = dat$train)
-y_hat <- predict(fit, newdata = dat$test)
-y_test<-as.numeric(as.character(dat$test$y))
-sqrt(mean((y_hat - y_test)^2)) # Calculate the RMSE to find the accuracy of linear regression
-#RMSE=1.053807
+fit_linear <- dat$train %>% lm(as.numeric(as.character(y)) ~ x, data=.)
+y_hat_linear <- ifelse(predict(fit_linear, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+y_test<-dat$test$y
+mean(y_test == y_hat_linear) 
 
 # Logistic model
 fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
-y_hat_glm <- as.numeric(as.character(ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))))
-y_test<-as.numeric(as.character(dat$test$y))
-mean(y_hat_glm == dat$test$y) # Prediction accuracy of the model
+y_hat_glm <- ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+y_test<-dat$test$y
+mean(y_hat_glm == y_test) # Prediction accuracy of the logistic model
 
 ```
 
@@ -258,24 +257,25 @@ mean(y_hat_glm == dat$test$y) # Prediction accuracy of the model
 
 ```{r}
 
-rmse_linear<-replicate(100, {
+
+accuracy_linear<-replicate(100, {
     dat <- make_data() 
-    fit <- lm(y ~ x, data = dat$train)
-    y_hat <- predict(fit, newdata = dat$test)
-    y_test<-as.numeric(as.character(dat$test$y))
-    sqrt(mean((y_hat - y_test)^2))
+    fit_linear <- dat$train %>% lm(as.numeric(as.character(y)) ~ x, data=.)
+    y_hat_linear <- ifelse(predict(fit_linear, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+    y_test<-dat$test$y
+    mean(y_test == y_hat_linear) 
 })
 
-hist(rmse_linear)
-mean(rmse_linear)
-sd(rmse_linear)
+hist(accuracy_linear)
+mean(accuracy_linear)
+sd(accuracy_linear)
 
 accuracy_logistic<-replicate(100, {
   dat <- make_data() 
   fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
-  y_hat_glm <- as.numeric(as.character(ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))))
-  y_test<-as.numeric(as.character(dat$test$y))
-  mean(y_hat_glm == dat$test$y)
+  y_hat_glm <- ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+  y_test<-dat$test$y
+  mean(y_hat_glm == y_test)
 })
 
 
