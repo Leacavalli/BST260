@@ -129,7 +129,8 @@ names
 as.tibble(x) |> 
   mutate(class = names)
 
-#i don't really understand what it is asking here, sorry!
+#i don't really understand what it is asking here, sorry! But luli said:
+#Oh yeah don't worry about that one, apparently it's asking for a heat map of genes x tissues where the colors are the mean. but wouldn't ask you to do that on the exam
 
 ```
 
