@@ -11,6 +11,10 @@ Answer: a
 
 2\. Let's assume that there is in fact a genetic component to SIDS and the probability of $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) = 1/100$, is much higher than 1 in 8,500. What is the probability of both of her sons dying of SIDS? 
 
+```{r}
+(1/8500) * (1/100)
+```
+
 Answer: (1/100)*(1/8500) = 1/850000 or 1.7641e-06
 
 3\. Many press reports stated that the expert claimed the probability of Sally Clark being innocent as 1 in 73 million. Perhaps the jury and judge also interpreted the testimony this way. This probability can be written as the probability of _a mother is a son-murdering psychopath_ given that  
@@ -21,7 +25,8 @@ ANSWER:
 A: Mother is a son-murdering psychopath
 B: Two of her children are found dead with no evidence of physical harm 
 
-(Insert Bayes Theorem)
+Pr(A|B) = [Pr(B|A)*Pr(A)]/Pr(B)
+
 
 Probability mother is a son-murdering psychopath GIVEN that two of her children found dead wth no evidence of physical harm 
 
@@ -31,7 +36,17 @@ $$
 $$  
 with A = two of her children are found dead with no evidence of physical harm and B = a mother is a son-murdering psychopath = 0.50. Assume that the rate of son-murdering psychopaths mothers is 1 in 1,000,000.     According to Bayes' theorem, what is the probability of $\mbox{Pr}(B \mid A)$ ? 
 
-Answer: Probablity of $\mbox{Pr}(B \mid A)$ = 0.425
+Answer: Probability of $\mbox{Pr}(B \mid A)$ = 0.425
+
+Bayes theorem
+
+  Pr(A|B) = [Pr(B|A)*Pr(A)]/Pr(B)
+  
+  Pr(A|B)Pr(B) = Pr(B|A)Pr(A)
+  
+  [Pr(A|B)Pr(B)]/Pr(A) = Pr(B|A)
+  
+  Pr(B|A) = [Pr(A|B)Pr(B)]/Pr(A)
 
 ```{r}
 #likelihood
@@ -96,6 +111,12 @@ tau <- 0.01
 sigma <- results$se
 Y <- results$avg
 
+#  Using the posterior probability function
+#  E(p|Y=y) =Bmu + (1-B)y
+#  with B= sigma^2/ [sigma^2 + r^2]
+
+
+
 #weighted average of beta
 
 B<- sigma^2/(sigma^2 +tau^2)
@@ -114,6 +135,9 @@ exp_ps = 0.002731286
 
 
 9\. Now compute the standard deviation of the posterior distribution. 
+
+
+SE(p|y)^2 = 1/ [1/sigmasquared+1/tausquared]
 
 ```{r}
 se_post <-sqrt(1/(1/sigma^2 + 1/tau^2))
