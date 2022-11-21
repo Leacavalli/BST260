@@ -13,7 +13,6 @@ e. Siri (speech recognition) - categorical (classify sounds into words)
 library(dslabs) 
 mnist <- read_mnist() 
 #Can also see that in mnist where data goes from 1:784
-
 ``` 
 
 3\. In the digit reader example, the outcomes are stored here: 

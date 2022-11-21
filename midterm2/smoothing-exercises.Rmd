@@ -54,6 +54,18 @@ dat %>%
   geom_point() + 
   geom_smooth(method='loess', span = 60/as.numeric(diff(range(dat$date))))
 
+
+#code that I gathered from lab
+# dat <- dat %>% filter(!is.na(deaths))
+# myloess<-loess(deaths ~ as.numeric(date), dat, span = 60/as.numeric(diff(range(dat$date))))
+# 
+# plot(myloess)
+# 
+# dat %>%
+#   mutate(prediction = predict(myloess, as.numeric(date))) %>%
+#   ggplot(aes(x = date)) +
+#   geom_point(aes(y= deaths)) +
+#   geom_line(aes(y = prediction), color ='red')
 ```
 
 2\. Plot the smooth estimates against day of the year, all on the same plot but with different colors. 

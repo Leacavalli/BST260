@@ -26,6 +26,20 @@ ggplot(data = galton_heights, aes(x = mother, y = childHeight)) +
 ggplot(data = galton_heights, aes(x = father, y = childHeight)) +
   geom_point() +
   facet_wrap(gender ~ .)
+
+
+
+# #other ways to code this 
+# #library(ggplot2)
+# #galton_heights %>%
+#   ggplot(aes(x=mother, y = childHeight)) +
+#   geom_point()+
+#   facet_wrap(gender~.)
+# 
+# galton_heights %>%
+#   ggplot(aes(x=father, y = childHeight)) +
+#   geom_point()+
+#   facet_wrap(gender~.)
 ```
 
 3\. Compute the correlation in heights between mothers and daughters, mothers and sons, fathers and daughters, and fathers and sons.
