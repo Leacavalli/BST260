@@ -96,5 +96,13 @@ ggplot(data = mnist_27$train,aes(x = x_2, y = y)) +
 
 # I'm not sure about this answer. 
 
+#maddy attempt
+my_loess2<-loess(as.numeric(y) ~ as.numeric(x_2), mnist_27$train)#default span is 0.75
+mnist_27$test |> 
+  mutate(prediction = predict(my_loess2, as.numeric(x_2))) |>
+  ggplot(aes(x=x_2)) + 
+  geom_point(aes(y = y)) + 
+  geom_line(aes(y = prediction), color = 'red')
+
 ```
 
