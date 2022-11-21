@@ -1,0 +1,1523 @@
+## Exercises 
+1\. In 1999, in England, Sally Clark^[https://en.wikipedia.org/wiki/Sally_Clark] was found guilty of the murder of two of her sons. Both infants were found dead in the morning, one in 1996 and another in 1998. In both cases, she claimed the cause of death was sudden infant death syndrome (SIDS). No evidence of physical harm was found on the two infants so the main piece of evidence against her was the testimony of Professor Sir Roy Meadow, who testified that the chances of two infants dying of SIDS was 1 in 73 million. He arrived at this figure by finding that the rate of SIDS was 1 in 8,500 and then calculating that the chance of two SIDS cases was 8,500 $\times$ 8,500 $\approx$ 73 million. Which of the following do you agree with? 
+a. Sir Meadow assumed that the probability of the second son being affected by SIDS was independent of the first son being affected, thereby ignoring possible genetic causes. If genetics plays a role then: $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) < \mbox{P}r(\mbox{first case of SIDS})$. 
+#PBR: not sure if this matters but there is a typo here. It should be greater than.
+
+b. Nothing. The multiplication rule always applies in this way: $\mbox{Pr}(A \mbox{ and } B) =\mbox{Pr}(A)\mbox{Pr}(B)$ 
+c. Sir Meadow is an expert and we should trust his calculations. 
+d. Numbers don't lie. 
+
+Answer: a
+
+2\. Let's assume that there is in fact a genetic component to SIDS and the probability of $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) = 1/100$, is much higher than 1 in 8,500. What is the probability of both of her sons dying of SIDS? 
+
+```{r}
+(1/8500) * (1/100)
+```
+
+Answer: (1/100)*(1/8500) = 1/850000 or 1.7641e-06
+
+3\. Many press reports stated that the expert claimed the probability of Sally Clark being innocent as 1 in 73 million. Perhaps the jury and judge also interpreted the testimony this way. This probability can be written as the probability of _a mother is a son-murdering psychopath_ given that  
+_two of her children are found dead with no evidence of physical harm_.  
+According to Bayes' rule, what is this? 
+
+ANSWER:
+A: Mother is a son-murdering psychopath
+B: Two of her children are found dead with no evidence of physical harm 
+
+Pr(A|B) = [Pr(B|A)*Pr(A)]/Pr(B)
+
+
+Probability mother is a son-murdering psychopath GIVEN that two of her children found dead wth no evidence of physical harm 
+
+4\. Assume that the chance of a son-murdering psychopath finding a way to kill her children, without leaving evidence of physical harm, is: 
+$$ 
+\mbox{Pr}(A \mid B) = 0.50 
+$$  
+with A = two of her children are found dead with no evidence of physical harm and B = a mother is a son-murdering psychopath = 0.50. Assume that the rate of son-murdering psychopaths mothers is 1 in 1,000,000.     According to Bayes' theorem, what is the probability of $\mbox{Pr}(B \mid A)$ ? 
+
+Answer: Probability of $\mbox{Pr}(B \mid A)$ = 0.425
+
+Bayes theorem
+
+  Pr(A|B) = [Pr(B|A)*Pr(A)]/Pr(B)
+  
+  Pr(A|B)Pr(B) = Pr(B|A)Pr(A)
+  
+  [Pr(A|B)Pr(B)]/Pr(A) = Pr(B|A)
+  
+  Pr(B|A) = [Pr(A|B)Pr(B)]/Pr(A)
+
+```{r}
+#likelihood
+p_ab<-0.5
+
+#A = two of her children are found dead with no evidence of physical harm
+p_a <- 1/8500*1/100 #prob of a happening 
+
+#B = a mother is a son-murdering psychopath
+p_b <-1/1000000 #prob of b happening 
+
+p_ab * p_b/p_a
+
+
+```
+
+
+5/. After Sally Clark was found guilty, the Royal Statistical Society issued a statement saying that there was "no statistical basis" for the expert's claim. They expressed concern at the "misuse of statistics in the courts". Eventually, Sally Clark was acquitted in June 2003. What did the expert miss? 
+a. He made an arithmetic error. 
+b. He made two mistakes. First, he misused the multiplication rule and did not take into account how rare it is for a mother to murder her children. After using Bayes' rule, we found a probability closer to 0.5 than 1 in 73 million. 
+c. He mixed up the numerator and denominator of Bayes' rule. 
+d. He did not use R. 
+
+Answer: b
+
+
+6\. Florida is one of the most closely watched states in the U.S. election because it has many electoral votes, and the election is generally close, and Florida tends to be a swing state that can vote either way. Create the following table with the polls taken during the last two weeks: 
+```{r, eval=FALSE} 
+library(tidyverse) 
+library(dslabs) 
+data(polls_us_election_2016) 
+polls <- polls_us_election_2016 |>  
+  filter(state == "Florida" & enddate >= "2016-11-04" ) |>  
+  mutate(spread = rawpoll_clinton/100 - rawpoll_trump/100) 
+``` 
+Take the average spread of these polls. The CLT tells us this average is approximately normal. Calculate an average and provide an estimate of the standard error. Save your results in an object called `results`. 
+
+```{r}
+results <- polls %>% summarize (avg=mean(spread), se = sd(spread)/sqrt(n()))
+
+results
+
+```
+
+Answer:
+avg = 0.004154545	
+se =0.007218692
+
+7\. Now assume a Bayesian model that sets the prior distribution for Florida's election night spread $d$ to be Normal with expected value $\mu$ and standard deviation $\tau$. What are the interpretations of $\mu$ and $\tau$? 
+a. $\mu$ and $\tau$ are arbitrary numbers that let us make probability statements about $d$. 
+b. $\mu$ and $\tau$ summarize what we would predict for Florida before seeing any polls. Based on past elections, we would set $\mu$ close to 0 because both Republicans and Democrats have won, and $\tau$ at about $0.02$, because these elections tend to be close. 
+c. $\mu$ and $\tau$ summarize what we want to be true. We therefore set $\mu$ at $0.10$ and $\tau$ at $0.01$.  
+d. The choice of prior has no effect on Bayesian analysis. 
+
+Answer: b
+
+8\. The CLT tells us that our estimate of the spread $\hat{d}$ has normal distribution with expected value $d$ and standard deviation $\sigma$ calculated in problem 6. Use the formulas we showed for the posterior distribution to calculate the expected value of the posterior distribution if we set $\mu = 0$ and $\tau = 0.01$. 
+
+```{r}
+mu <- 0 
+tau <- 0.01
+sigma <- results$se
+Y <- results$avg
+
+#  Using the posterior probability function
+#  E(p|Y=y) =Bmu + (1-B)y
+#  with B= sigma^2/ [sigma^2 + r^2]
+
+
+
+#weighted average of beta
+
+B<- sigma^2/(sigma^2 +tau^2)
+B
+
+#
+exp_ps <- B *mu + (1-B) * Y
+exp_ps
+
+```
+
+B = 0.342579
+
+Answer: 
+exp_ps = 0.002731286
+
+
+9\. Now compute the standard deviation of the posterior distribution. 
+
+
+SE(p|y)^2 = 1/ [1/sigmasquared+1/tausquared]
+
+```{r}
+se_post <-sqrt(1/(1/sigma^2 + 1/tau^2))
+se_post
+```
+
+Answer: 0.005853024
+
+10\. Using the fact that the posterior distribution is normal, create an interval that has a 95% probability of occurring centered at the posterior expected value. Note that we call these credible intervals. 
+
+```{r}
+#one way to calculate
+exp_ps + c(-1.96,1.96) * se_post
+
+#another way to calculate (slightly different answers because it is 1.95...)
+exp_ps + c(-1,1) * qnorm(0.975)*se_post
+
+```
+
+Answer: -0.008740642  0.014203214
+
+OR
+
+-0.008740432  0.014203003
+
+11\. According to this analysis, what was the probability that Trump wins Florida? 
+
+```{r}
+pnorm(0,exp_ps,se_post)
+
+```
+
+Answer: 0.3203769
+
+12\. Now use `sapply` function to change the prior variance from `seq(0.05, 0.05, len = 100)` and observe how the probability changes by making a plot. 
+
+Answer:
+
+```{r}
+mu <- 0
+taus <- seq(0.005, 0.05, len = 100)
+sigma <- results$se
+Y <- results$avg
+
+ps<-sapply(taus, function(tau){
+  B <- sigma^2/ (sigma^2 +tau^2)
+  pnorm(0,B*mu + (1-B)*Y,sqrt(1/(1/sigma^2+1/tau^2)))
+})
+  
+plot(taus,ps)
+
+```
+
+
+
+## Exercises 
+The `reported_height` and `height` datasets were collected from three classes taught in the Departments of Computer Science and Biostatistics, as well as remotely through the Extension School. The biostatistics class was taught in 2016 along with an online version offered by the Extension School. On 2016-01-25 at 8:15 AM, during one of the lectures, the instructors asked students to fill in the sex and height questionnaire that populated the `reported_height` dataset. The online students filled the survey during the next few days, after the lecture was posted online. We can use this insight to define a variable, call it `type`, to denote the type of student:  `inclass` or `online`: 
+```{r, eval=FALSE} 
+library(lubridate) 
+library(dslabs)
+data("reported_heights") 
+dat <- mutate(reported_heights, date_time = ymd_hms(time_stamp)) |> 
+  filter(date_time >= make_date(2016, 01, 25) &  
+           date_time < make_date(2016, 02, 1)) |> 
+  mutate(type = ifelse(day(date_time) == 25 & hour(date_time) == 8 &  
+                         between(minute(date_time), 15, 30), 
+                       "inclass", "online")) |> select(sex, type) 
+x <- dat$type 
+y <- factor(dat$sex, c("Female", "Male")) 
+``` 
+
+1\. Show summary statistics that indicate that the `type` is predictive of sex. 
+
+```{r}
+head(dat)
+table(dat)
+dat %>% group_by(type, sex) %>% summarise(count = n())
+# proportion female: 
+26/(26+13) # 2/3 in class are female
+42/(42+69) # 1/3 online are female
+
+prop.table(table(dat))
+prop.table(table(dat), 2)
+
+# Predictive value: if type is online we would predict male and if type is inclass we would predict female. 
+```
+
+2\. Instead of using height to predict sex, use the `type` variable. 
+```{r}
+# Predictive value: if type is online we would predict male and if type is inclass we would predict female. 
+y_hat <- ifelse(x== 'online', 'Male', 'Female')
+
+dat$y_hat <- ifelse(x== 'online', 'Male', 'Female')
+dat
+```
+
+3\. Show the confusion matrix. 
+```{r}
+table(y_hat, y)
+
+table(dat$y_hat, dat$sex)
+prop.table(table(dat$y_hat, dat$sex))
+# Value on the diagonal are predicted corectly, values on the off diagonal are predicted wrongly.
+```
+
+4\. Use the `confusionMatrix` function in the __caret__ package to report accuracy. 
+```{r}
+#install.packages("caret")
+library(caret)
+?caret::confusionMatrix
+confusionMatrix(factor(y_hat), y)
+
+#Accuracy : 0.6333  
+# check by hand:
+(26+69)/(26+13+42+69)
+```
+
+5\. Now use the `sensitivity` and `specificity` functions to report specificity and sensitivity. 
+```{r}
+?caret::sensitivity
+?caret::specificity
+
+sensitivity(factor(y_hat), y)
+specificity(factor(y_hat), y)
+
+```
+
+6\. What is the prevalence (% of females) in the `dat` dataset defined above? 
+```{r}
+mean(dat$sex == 'Female')
+
+length(which(dat$sex == 'Female'))/nrow(dat)
+
+# Also in the confusion atric output. 
+```
+
+
+
+
+## Exercises 
+Generate a set of random predictors and outcomes like this: 
+```{r, eval=FALSE} 
+set.seed(1996) 
+n <- 1000 
+p <- 10000 
+x <- matrix(rnorm(n * p), n, p) 
+colnames(x) <- paste("x", 1:ncol(x), sep = "_") 
+y <- rbinom(n, 1, 0.5) |> factor() 
+x_subset <- x[ ,sample(p, 100)] 
+``` 
+1\. Because `x` and `y` are completely independent, you should not be able to predict `y` using `x` with accuracy larger than 0.5. Confirm this by running cross validation using logistic regression to fit the model. Because we have so many predictors, we selected a random sample `x_subset`. Use the subset when training the model. Hint: use the caret `train` function. The `results` component of the output of `train` shows you the accuracy. Ignore the warnings.
+
+```{r}
+#first load in caret
+library(caret)
+#make a dataframe of the xs and ys 
+dat <- data.frame(y, x_subset)
+#this is a dataframe wtih 1000 binomial Y values, at 100 random predictors of X; 1000 rows and 101 columns.
+mod <- train(y ~., method= 'glm', data = dat, family = "binomial", trControl = trainControl("cv")) #this uses caret train to fit a logistic regression and tells it to use cross validation. This means that it will break the data into chunks (10 is default), and test the accuracy on the chunk not included. This really impacts the accuracy; it gives a cross-validated measure of accuracy
+mod$results
+#accuracy is about 0.5, as expected
+#accuracy is the proportion of cases correctly predicted in the test set
+```
+
+
+2\. Now, instead of a random selection of predictors, we are going to search for those that are most predictive of the outcome. We can do this by comparing the values for the $y=1$ group to those in the $y=0$ group, for each predictor, using a t-test. You can perform this step like this: 
+```{r, eval=FALSE} 
+#devtools::install_bioc("genefilter") 
+#install.packages("genefilter") 
+#the above 2 lines were the installation of genefilter from the original exercise file, but in lab she said to install it a different way because that code doesn't work; instead you can do:
+#if (!require("BiocManager", quietly = TRUE))
+ #   install.packages("BiocManager")
+#BiocManager::install(version = "3.16")
+#BiocManager:: install("genefilter")
+#commenting out all the installation; it does take a bit of time
+library(genefilter) 
+tt <- colttests(x, y) #runs t tests between all columns in x and y efficiently, outputs a 10000 x 3 matrix that has the statistic, dm (difference in group means) and p.value for each x column tested
+``` 
+Create a vector of the p-values and call it `pvals`. 
+
+```{r}
+library(tidyverse)
+p_values <- tt |> pull(p.value)
+head(p_values)
+```
+
+
+3\. Create an index `ind` with the column numbers of the predictors that were "statistically significantly" associated with `y`. Use a p-value cutoff of 0.01 to define "statistically significant". How many predictors survive this cutoff? 
+
+```{r}
+ind <- which(p_values <= 0.01)
+length(ind) #108
+ind
+```
+
+
+4\. Re-run the cross validation but after redefining `x_subset` to be the subset of `x` defined by the columns showing "statistically significant" association with `y`. What is the accuracy now? 
+
+```{r}
+#take a new x_subset using only the columns in x from the indices specified in 'ind' which we know have the strongest association with y.
+x_subset_new <- x[,ind]
+dim(x_subset_new) #this now has 1000 rows and 108 columns from the 108 predictors with significant p values
+new_dat <- data.frame(y,x_subset_new)
+mod2 <- train(y ~., method = 'glm', data = new_dat, family = "binomial", trControl = trainControl("cv")) 
+#using the same code as above to fit and cross validate
+mod2$results
+```
+
+5\. Re-run the cross validation again, but this time using kNN. Try out the following grid of tuning parameters: `k = seq(101, 301, 25)`. Make a plot of the resulting accuracy. 
+```{r}
+mod3 <- train(y ~., method = 'knn', data = new_dat, tuneGrid = data.frame(k=seq(101,301,25)), trControl = trainControl("cv"))
+mod3$results
+ggplot(mod3)
+#or
+ggplot(mod3$results, aes(x=k, y = Accuracy)) + geom_point() + geom_line()
+```
+
+6\. In exercises 3 and 4, we see that despite the fact that `x` and `y` are completely independent, we were able to predict `y` with accuracy higher than 70%. We must be doing something wrong then. What is it? 
+a. The function `train` estimates accuracy on the same data it uses to train the algorithm. 
+b. We are over-fitting the model by including 100 predictors. 
+c. We used the entire dataset to select the columns used in the model. This step needs to be included as part of the algorithm. The cross validation was done **after** this selection. *this one*
+d. The high accuracy is just due to random variability. 
+7\. Advanced. Re-do the cross validation but this time include the selection step in the cross validation. The accuracy should now be close to 50%. *won't be on exam*
+
+8\. Load the `tissue_gene_expression` dataset. Use the `train` function to predict tissue from gene expression. Use kNN. What `k` works best? *won't be on exam*
+```{r, include=FALSE} 
+knitr::opts_chunk$set(out.width = "70%", out.extra = NULL) 
+``` 
+## Exercises 
+1\. The `createResample` function can be used to create bootstrap samples. For example, we can create 10 bootstrap samples for the `mnist_27` dataset like this: 
+```{r, eval=FALSE} 
+library(dslabs)
+set.seed(1995) 
+indexes <- createResample(mnist_27$train$y, 10) #takes indices, draws with replacement
+``` 
+How many times do `3`, `4`, and `7` appear in the first re-sampled index? 
+```{r}
+sum(indexes$Resample01 %in% c(3,4,7))
+```
+
+2\. We see that some numbers appear more than once and others appear no times. This has to be this way for each dataset to be independent. Repeat the exercise for all the re-sampled indexes. 
+```{r}
+x <- c()
+for(i in 1:10){x <- c(x, sum(indexes[[i]] %in% c(3,4,7)))}
+x
+```
+
+
+3\. Generate a random dataset like this: 
+```{r, eval=FALSE} 
+y <- rnorm(100, 0, 1) 
+``` 
+Estimate the 75th quantile, which we know is:  
+```{r, eval = FALSE} 
+qnorm(0.75) 
+``` 
+with the sample quantile: 
+```{r, eval = FALSE} 
+quantile(y, 0.75) 
+#bootstrap is a powerful way to infer distribution, doesn't make assumptions but uses resampling to learn what the data distribution looks like
+``` 
+Run a Monte Carlo simulation to learn the expected value and standard error of this random variable. 
+```{r}
+B <- 10000
+sim <- replicate(B, {
+  y <- rnorm(100,0,1)
+  quantile(y,0.75)
+})
+sim
+mean(sim)
+sd(sim)
+hist(sim)
+```
+
+
+4\. In practice, we can't run a Monte Carlo simulation because we don't know if `rnorm` is being used to simulate the data. Use the bootstrap to estimate the standard error using just the initial sample `y`. Use 10 bootstrap samples. 
+```{r}
+bs <- replicate(10, {
+  ind <- sample(1:100, 100 , replace=TRUE)
+  dat <- y[ind]
+  quantile(dat, 0.75)
+})
+
+mean(bs)
+sd(bs)
+```
+
+
+5\. Redo exercise 4, but with 10,000 bootstrap samples. 
+```{r}
+bs2 <- replicate(10000, {
+  ind <- sample(1:100, 100, replace=TRUE)
+  dat <- y[ind]
+  quantile(dat, 0.75)
+})
+
+mean(bs2)
+sd(bs2)
+```
+
+ 
+## Exercises 
+We are going to apply LDA and QDA to the `tissue_gene_expression` dataset. We will start with simple examples based on this dataset and then develop a realistic example. 
+1\. Create a dataset with just the classes "cerebellum" and "hippocampus" (two parts of the brain) and a predictor matrix with 10 randomly selected columns. 
+```{r, eval=FALSE} 
+set.seed(1993) 
+data("tissue_gene_expression") 
+tissues <- c("cerebellum", "hippocampus") 
+ind <- which(tissue_gene_expression$y %in% tissues) 
+y <- droplevels(tissue_gene_expression$y[ind]) 
+x <- tissue_gene_expression$x[ind, ] 
+x <- x[, sample(ncol(x), 10)] 
+dim(x)
+length(y)
+``` 
+Use the `train` function to estimate the accuracy of LDA.
+```{r}
+train_lda <- train(x,y, method='lda')
+train_lda$results[["Accuracy"]]
+
+```
+
+
+2\.  In this case, LDA fits two 10-dimensional normal distributions. Look at the fitted model by looking at the `finalModel` component of the result of train. Notice there is a component called `means` that includes the estimate `means` of both distributions. Plot the mean vectors against each other and determine which predictors (genes) appear to be driving the algorithm.  
+
+```{r}
+fin <- train_lda$finalModel
+means <- fin$means
+means
+names = rownames(means)
+means |> 
+  as.tibble() |>
+  mutate(type = names) |>
+  pivot_longer(cols = -type) |> 
+  pivot_wider(names_from = type) |>
+  ggplot(aes(x=cerebellum, y= hippocampus)) + 
+    geom_point() + 
+    geom_text(aes(label=name), nudge_y = 0.3)+
+  geom_abline(slope=1, intercept=0)
+
+#looks like TGFBR3 and F11R
+```
+
+
+3\. Repeat exercises 1 with QDA. Does it have a higher accuracy than LDA? 
+```{r}
+train_qda <- train(x,y, method='qda')
+train_qda$results[["Accuracy"]]
+#this is a bit lower than lda!
+```
+
+4\. Are the same predictors (genes) driving the algorithm? Make a plot as in exercise 2. 
+```{r}
+means2 <- train_qda$finalModel$means
+names2 = rownames(means2)
+means2 |> 
+  as.tibble() |>
+  mutate(type = names2) |>
+  pivot_longer(cols = -type) |> 
+  pivot_wider(names_from = type) |>
+  ggplot(aes(x=cerebellum, y= hippocampus)) + 
+    geom_point() + 
+    geom_text(aes(label=name), nudge_y = 0.3)+
+  geom_abline(slope=1, intercept=0)
+#yes looks like the same genes
+```
+
+5\. One thing we see in the previous plot is that the value of predictors correlate in both groups: some predictors are low in both groups while others are high in both groups. The mean value of each predictor, `colMeans(x)`, is not informative or useful for prediction, and often for interpretation purposes it is useful to center or scale each column. This can be achieved with the `preProcessing` argument in `train`. Re-run LDA with `preProcessing = "scale"`.
+```{r}
+#question should say preprocess not preprocessing
+train_lda2 <- train(x,y, method='lda', preProcess = "scale")
+train_lda2$results[["Accuracy"]]
+
+means3 <- train_lda2$finalModel$means
+names3 = rownames(means3)
+means3
+means3 |> 
+  as.tibble() |>
+  mutate(type = names3) |>
+  pivot_longer(cols = -type) |> 
+  pivot_wider(names_from = type) |>
+  ggplot(aes(x=cerebellum, y= hippocampus)) + 
+    geom_point() + 
+    geom_text(aes(label=name), nudge_y = 0.3)+
+  geom_abline(slope=1, intercept=0)
+#this does not make it easier to tell... in fact makes it harder to tell? this is what luli did though. 
+```
+
+Note that accuracy does not change but see how it is easier to identify the predictors that differ more between groups in the plot made in exercise 4. 
+6\. In the previous exercises we saw that both approaches worked well. Plot the predictor values for the two genes with the largest differences between the two groups in a scatterplot to see how they appear to follow a bivariate distribution as assumed by the LDA and QDA approaches. Color the points by the outcome. 
+```{r}
+#2 genes are TGBBR3 and F11R
+names <- rownames(x)
+x
+as.tibble(x) |> 
+  mutate(class = names) |>
+  select(class, TGFBR3, F11R) |>
+  ggplot(aes(TGFBR3, F11R, color = y)) + geom_point()
+```
+
+
+
+7\. Now we are going to increase the complexity of the challenge slightly: we will consider all the tissue types. 
+```{r, eval=FALSE} 
+set.seed(1993) 
+data("tissue_gene_expression") 
+y <- tissue_gene_expression$y 
+x <- tissue_gene_expression$x 
+x <- x[, sample(ncol(x), 10)] 
+#maddy code
+train_lda3 <- train(x,y, method='lda')
+``` 
+What accuracy do you get with LDA? 
+```{r}
+train_lda3$results[["Accuracy"]]
+```
+
+8\. We see that the results are slightly worse. Use the `confusionMatrix` function to learn what type of errors we are making. 
+```{r}
+y_hat <- predict(train_lda3, x)
+confusionMatrix(y_hat, y)
+#not as good for endometrium and kidney; they have low sensitivity 
+```
+
+9\. Plot an image of the centers of the seven 10-dimensional normal distributions. 
+```{r}
+x
+names <- rownames(x)
+names
+as.tibble(x) |> 
+  mutate(class = names)
+
+#i don't really understand what it is asking here, sorry! But luli said:
+#Oh yeah don't worry about that one, apparently it's asking for a heat map of genes x tissues where the colors are the mean. but wouldn't ask you to do that on the exam
+
+```
+
+## Exercises 
+1\. For each of the following, determine if the outcome is continuous or categorical: 
+a. Digit reader              - categorical 
+b. Movie recommendations     - continuous (if assume decimal grades are possible)
+c. Spam filter               - categorical (binary: spam or not spam)
+d. Hospitalizations          - continuous (not decimals, but numbers have meaning not categories)
+e. Siri (speech recognition) - categorical (classify sounds into words)
+
+2\. How many features are available to us for prediction in the digits dataset? 
+```{r, eval=FALSE} 
+#In the book, explains that these are 28*28 = 784 pixels. 
+
+library(dslabs) 
+mnist <- read_mnist() 
+#Can also see that in mnist where data goes from 1:784
+
+``` 
+
+3\. In the digit reader example, the outcomes are stored here: 
+```{r, eval=FALSE} 
+library(dslabs) 
+mnist <- read_mnist() 
+y <- mnist$train$labels 
+``` 
+
+Do the following operations have a practical meaning? 
+```{r, eval=FALSE} 
+y[5] + y[6] 
+y[5] > y[6]
+
+# 
+``` 
+Pick the best answer: 
+a. Yes, because $9 + 2 = 11$ and $9 > 2$. 
+b. No, because `y` is not a numeric vector. 
+c. No, because 11 is not a digit. It's two digits. 
+d. No, because these are labels representing a category not a number. A `9` represents a class not the number 9. 
+Answer: d
+
+ 
+## Exercises 
+1\. Load the `GaltonFamilies` data from the __HistData__. The children in each family are listed by gender and then by height. Create a dataset called `galton_heights` by picking a male and female at random.  
+
+```{r}
+if (!require("HistData")) install.packages("HistData")
+library(HistData)
+library(tidyverse)
+GaltonFamilies
+
+# TA said that this question meant to ask "picking a male and female at random FROM EACH FAMILY".
+galton_heights <- GaltonFamilies %>%
+  group_by(family, gender) %>%
+  sample_n(1)
+galton_heights
+
+```
+
+
+2\. Make a scatterplot for heights between mothers and daughters, mothers and sons, fathers and daughters, and fathers and sons.
+
+```{r}
+ggplot(data = galton_heights, aes(x = mother, y = childHeight)) +
+  geom_point() +
+  facet_wrap(gender ~ .)
+
+ggplot(data = galton_heights, aes(x = father, y = childHeight)) +
+  geom_point() +
+  facet_wrap(gender ~ .)
+```
+
+3\. Compute the correlation in heights between mothers and daughters, mothers and sons, fathers and daughters, and fathers and sons.
+
+```{r}
+#ugly way: 
+#cor(galton_heights[galton_heights$gender == "female",]$father, galton_heights[galton_heights$gender == "female",]$childHeight)
+
+galton_heights %>%
+  group_by(gender) %>%
+  summarise(correlation = cor(father, childHeight))
+
+galton_heights %>%
+  group_by(gender) %>%
+  summarise(correlation = cor(mother, childHeight))
+
+```
+
+
+## Exercises 
+1\. Install and load the __Lahman__ library. This database includes data related to baseball teams. It includes summary statistics about how the players performed on offense and defense for several years. It also includes personal information about the players. 
+The `Batting` data frame contains the offensive statistics for all players for many years. You can see, for example, the top 10 hitters by running this code: 
+```{r, eval=FALSE} 
+#install.packages('Lahman')
+library(Lahman) 
+top <- Batting |>  
+  filter(yearID == 2016) |> 
+  arrange(desc(HR)) |> 
+  slice(1:10) 
+top |> as_tibble() 
+``` 
+But who are these players? We see an ID, but not the names. The player names are in this table 
+```{r, eval=FALSE} 
+library(dslabs)
+People |> as_tibble() 
+#use "People" not Master
+#nameFirst is first name, nameLast is last name, nameGiven is both with a space
+``` 
+We can see column names `nameFirst` and `nameLast`. Use the `left_join` function to create a table of the top home run hitters. The table should have `playerID`, first name, last name, and number of home runs (HR).  Rewrite the object `top` with this new table. 
+```{r}
+top <- left_join(top, People, by="playerID") |> 
+  select(playerID, nameFirst, nameLast, HR)
+head(top)
+
+#left join means including all rows in x (which is 'top' here)
+#?left_join
+```
+
+2\. Now use the `Salaries` data frame to add each player's salary to the table you created in exercise 1. Note that salaries are different every year so make sure to filter for the year 2016, then use `right_join`. This time show first name, last name, team, HR, and salary.
+```{r}
+data(Salaries)
+sal <- Salaries |> filter(yearID == "2016") |> select(playerID, salary)
+right_join(top, sal, by= "playerID")
+#right join takes the row names from the second dataframe, but it doesn't seem to have a big effect here?
+
+#PBR: not sure what you mean when you said it doesn't have a big effect but this seems like the correct answer to me! The 'top' dataframe had 10 observations and 4 variables. The filtered 'sal' dataframe has 853 obs and 2 variables. the final dataset has 853 observations and 5 variables which is correct!
+```
+
+3\. In a previous exercise, we created a tidy version of the `co2` dataset: 
+```{r, eval=FALSE} 
+co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) |>  
+  setNames(1:12) |> 
+  mutate(year = 1959:1997) |> 
+  pivot_longer(-year, names_to = "month", values_to = "co2") |> 
+  mutate(month = as.numeric(month)) 
+``` 
+We want to see if the monthly trend is changing so we are going to remove the year effects and then plot the results. We will first compute the year averages. Use the `group_by` and `summarize` to compute the average co2 for each year. Save in an object called `yearly_avg`. 
+```{r}
+yearly_avg <- co2_wide |> group_by(year) |> summarize(yearly_avg = mean(co2))
+head(yearly_avg)
+```
+
+
+4\. Now use the `left_join` function to add the yearly average to the `co2_wide` dataset. Then compute the residuals: observed co2 measure - yearly average. 
+```{r}
+#they have year in common
+comb <- left_join(co2_wide, yearly_avg, by = "year") |>
+  mutate(res = co2 - yearly_avg)
+comb
+```
+
+
+5\. Make a plot of the seasonal trends by year but only after removing the year effect. 
+
+```{r}
+#PBR: I watched the lab recording and this is code for what they were looking for which looks like the second plot you have here except yours is nicer! 
+library(ggplot2)
+comb |>
+  ggplot(aes(x=month, y=res)) +
+  geom_point() +
+  geom_line(aes(group=factor(year))) +
+  theme_classic()
+
+
+library(ggplot2)
+#not totally sure what they're asking for here, will plot a few different things
+comb |> 
+  group_by(year, month) |>
+  ggplot(aes(month, res, group=year, color = year)) + geom_line() + facet_wrap(~year)
+
+comb |> 
+  group_by(year, month) |>
+  ggplot(aes(month, res, group=year, color = year)) + geom_line()
+```
+
+
+ 
+## Exercises 
+1\. Earlier we used logistic regression to predict sex from height. Use kNN to do the same. Use the code described in this chapter to select the $F_1$ measure and plot it against $k$. Compare to the $F_1$ of about 0.6 we obtained with regression. 
+
+*Luli said this would not be on the exam in OH - someone asked what the point of this first exercise was and she said that doing logistic regression is like doing KNN with k=2 classes. if you use k=2, it sets up KNN to be similar to logistic regression output but the objectives of the two methods are different*
+
+
+```{r}
+library(dslabs)
+library(tidyverse)
+library(caret)
+data("heights")
+
+set.seed(1)
+test_index <- createDataPartition(heights$sex, times = 1, p = 0.5, list = FALSE)
+test_set <- heights[test_index, ]
+train_set <- heights[-test_index, ]     
+                
+ks <- seq(1, 101, 3)
+F_1 <- sapply(ks, function(k){
+    fit <- knn3(sex ~ height, data = train_set, k = k)
+    y_hat <- predict(fit, test_set, type = "class") %>% 
+        factor(levels = levels(train_set$sex))
+    F_meas(data = y_hat, reference = test_set$sex)
+})
+plot(ks, F_1)
+
+
+#max(F_1)
+```
+
+
+
+
+2\. Load the following dataset: 
+```{r, eval=FALSE} 
+data("tissue_gene_expression") 
+``` 
+This dataset includes a matrix `x`:  
+```{r, eval=FALSE} 
+dim(tissue_gene_expression$x) 
+
+#189 samples and 500 genes
+``` 
+with the gene expression measured on 500 genes for 189 biological samples representing seven different tissues. The tissue type is stored in `y`: 
+```{r, eval=FALSE} 
+table(tissue_gene_expression$y) 
+``` 
+Split the data in training and test sets, then use kNN to predict tissue type and see what accuracy you obtain. Try it for  $k = 1, 3, \dots, 11$. 
+
+Q from OH: How do we interpret the results of KNN? Is this accuracy?
+Luli: Yes this tells us the accuracy and that no matter which k you pick it's pretty accurate, since they are all close to 1
+
+```{r}
+
+# From OH - Luli said she would want to take into account trying to get a similar amount from each group, but that this isn't necessary for this - can just get a random 80-20 split
+#?knn3
+#length(tissue_gene_expression$y)   length is 189
+# taking sample from 1:length(tissue_gene_expression$y) to creating a 80-20 split; usually do 80% train, 20% test 
+train_indx <-sample(c(1:189), round(0.8*189))
+test_indx <-c(1:189)[-train_indx]
+  
+for (k in seq(1,11,2)){
+  fit <- knn3(tissue_gene_expression$x[train_indx,], 
+              tissue_gene_expression$y[train_indx], 
+              k=k)
+  
+  y_hat<-predict(fit,
+                 tissue_gene_expression$x[test_indx,],
+                 type = "class") # always fitted model and then the new data - just need to input X's for the prediction
+  print(paste0('k=',k))
+  print(mean(tissue_gene_expression$y[test_indx]==y_hat))
+}
+
+## ALTERNATIVE METHOD
+set.seed(1)
+library(caret)
+y <- tissue_gene_expression$y
+x <- tissue_gene_expression$x
+train_index <- createDataPartition(y, list = FALSE)
+
+train_index
+sapply(seq(1, 11, 2), function(k){
+    fit <- knn3(x[train_index,], y[train_index], k = k)
+    y_hat <- predict(fit, newdata = data.frame(x=x[-train_index,]),
+                type = "class") ## specifting in the test data
+mean(y_hat == y[-train_index])
+})
+```
+
+
+*OH QUESTIONS*
+Question during OH: For predict knn it can't give you the class but for predict linear or logistic it can only give you the probability, how do we decide the division rule is it always 0.5?
+
+Response:  Linear regression uses RMSE which is continuous metric. For logistic regression, set a cutoff if you're interested in comparing the classifications, also it's arbitrary, depending on what you think is fair. Most people use 0.5 by default; if greater than 0.5 you have a higher chance of being one class than the other. During the exam, then the cutoff would be specified
+
+Question: will we run code during the exam? 
+Response: Some questions provide the code, have us run it and then look at teh output and answer the question
+Might have to take an average or standard deviation, but won't have to write a lot of code
+
+Question: will it be like the last exam?
+Many will be very similar. For string processing, if there is a questino it will be a simpler here's an expression, which pattern matches this regular expresses, rather than changing a bunch of data
+
+For the exam, look at output, from the output what does it say the accuracy is
+
+ 
+## Exercises 
+
+```{r}
+library(caret)
+library(tidyverse)
+```
+
+1\. Create a dataset using the following code. 
+```{r, eval=FALSE} 
+n <- 100 
+
+Sigma <- 9*matrix(c(1.0, 0.5, 0.5, 1.0), 2, 2) 
+dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) |> 
+  data.frame() |> setNames(c("x", "y")) 
+``` 
+Use the __caret__ package to partition into a test and training set of equal size. Train a linear model and report the RMSE. Repeat this exercise 100 times and make a histogram of the RMSEs and report the average and standard deviation. Hint: adapt the code shown earlier like this:  
+```{r, eval=FALSE} 
+
+set.seed(1)
+
+rmse<-replicate(100, {
+    y <- dat$y 
+    test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE) 
+    train_set <- dat |> slice(-test_index) 
+    test_set <- dat |> slice(test_index) 
+    fit <- lm(y ~ x, data = train_set) 
+    y_hat <- fit$coef[1] + fit$coef[2]*test_set$x 
+    sqrt(mean((y_hat - test_set$y)^2)) 
+})
+
+hist(rmse)
+mean(rmse)
+sd(rmse)
+``` 
+and put it inside a call to `replicate`. 
+
+2\. Now we will repeat the above but using larger datasets. Repeat exercise 1 but for datasets with `n <- c(100, 500, 1000, 5000, 10000)`. Save the average and standard deviation of RMSE from the 100 repetitions. Hint: use the `sapply` or `map` functions. 
+
+```{r}
+n <-c(100, 500, 1000, 5000, 10000)
+
+sapply(n, function(n){
+    Sigma <- 9*matrix(c(1.0, 0.5, 0.5, 1.0), 2, 2) 
+    dat <- MASS::mvrnorm(n = n, c(69, 69), Sigma) |> 
+    data.frame() |> setNames(c("x", "y")) 
+    
+    rmse<-replicate(100, {
+        y <- dat$y 
+        test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE) 
+        train_set <- dat |> slice(-test_index) 
+        test_set <- dat |> slice(test_index) 
+        fit <- lm(y ~ x, data = train_set) 
+        y_hat <- fit$coef[1] + fit$coef[2]*test_set$x 
+        sqrt(mean((y_hat - test_set$y)^2)) 
+    })
+    
+    c(avg = mean(rmse), sd = sd(rmse))
+
+})
+
+
+```
+*All of the avg RMSE are around 2.5, but the SD decreases as the sample size increases*
+
+
+3\. Describe what you observe with the RMSE as the size of the dataset becomes larger. 
+*a. On average, the RMSE does not change much as `n` gets larger, while the variability of RMSE does decrease.* 
+b. Because of the law of large numbers, the RMSE decreases: more data, more precise estimates. 
+d. `n = 10000` is not sufficiently large. To see a decrease in RMSE, we need to make it larger. 
+d. The RMSE is not a random variable. 
+
+
+4\. Now repeat exercise 1, but this time make the correlation between `x` and `y` larger by changing `Sigma` like this: 
+```{r, eval=FALSE} 
+n <- 100 
+Sigma <- 9*matrix(c(1, 0.95, 0.95, 1), 2, 2) 
+dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) |> 
+  data.frame() |> setNames(c("x", "y")) 
+``` 
+Repeat the exercise and note what happens to the RMSE now. 
+
+```{r}
+n <-c(100, 500, 1000, 5000, 10000)
+
+sapply(n, function(n){
+    Sigma <- 9*matrix(c(1, 0.95, 0.95, 1), 2, 2) 
+    dat <- MASS::mvrnorm(n = 100, c(69, 69), Sigma) |> 
+        data.frame() |> setNames(c("x", "y")) 
+    
+    rmse<-replicate(100, {
+        y <- dat$y 
+        test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE) 
+        train_set <- dat |> slice(-test_index) 
+        test_set <- dat |> slice(test_index) 
+        fit <- lm(y ~ x, data = train_set) 
+        y_hat <- fit$coef[1] + fit$coef[2]*test_set$x 
+        sqrt(mean((y_hat - test_set$y)^2)) 
+    })
+    
+    c(avg = mean(rmse), sd = sd(rmse))
+
+})
+
+```
+*RMSE is now a lot lower than it was in the previous question, all around ~1, still doesn't change as sample size changes but since we have increased the correlation (sigma). The SD sseems fairly consistent across sample sizes now compared to before, all relatively small*
+
+5\. Which of the following best explains why the RMSE in exercise 4 is so much lower than exercise 1. 
+a. It is just luck. If we do it again, it will be larger. 
+b. The Central Limit Theorem tells us the RMSE is normal. 
+*c. When we increase the correlation between `x` and `y`, `x` has more predictive power and thus provides a better estimate of `y`. This correlation has a much bigger effect on RMSE than `n`. Large `n` simply provide us more precise estimates of the linear model coefficients.*
+d. These are both examples of regression, so the RMSE has to be the same. 
+
+
+6\.  Create a dataset using the following code: 
+```{r, eval=FALSE} 
+n <- 1000 
+Sigma <- matrix(c(1.0, 0.75, 0.75, 0.75, 1.0, 0.25, 0.75, 0.25, 1.0), 3, 3)
+dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) |> 
+  data.frame() |> setNames(c("y", "x_1", "x_2")) 
+``` 
+Note that `y` is correlated with both `x_1` and `x_2`, but the two predictors are independent of each other. 
+```{r, eval=FALSE} 
+cor(dat) 
+``` 
+Use the __caret__ package to partition into a test and training set of equal size. Compare the RMSE when using just `x_1`, just `x_2`, and both `x_1` and `x_2`. Train a linear model and report the RMSE.  
+
+```{r}
+y <- dat$y 
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE) 
+train_set <- dat |> slice(-test_index) 
+test_set <- dat |> slice(test_index) 
+
+# Just using x_1
+fit <- lm(y ~ x_1, data = train_set) 
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x_1
+model1_rmse<-sqrt(mean((y_hat - test_set$y)^2)) 
+
+
+# Just using x_2
+fit <- lm(y ~ x_2, data = train_set) 
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x_2 
+model2_rmse<-sqrt(mean((y_hat - test_set$y)^2)) 
+
+
+# Using x_1 and x_2
+fit <- lm(y ~ x_1 + x_2, data = train_set) 
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x_1 + fit$coef[3]*test_set$x_2
+model3_rmse<-sqrt(mean((y_hat - test_set$y)^2)) 
+
+
+model1_rmse
+model2_rmse
+model3_rmse
+```
+Model 1 (Y ~ X_1) RMSE: 0.6711232
+Model 2 (Y ~ X_2) RMSE: 0.6458776
+Model 3 (Y ~ X_1 + X_2) RMSE: 0.3001482
+
+Including both X_1 and X_2 decreases the RMSE, suggesting that including both covariates leads to better predictions
+
+7\.  Repeat exercise 6 but now create an example in which `x_1` and `x_2` are highly correlated: 
+```{r, eval=FALSE} 
+n <- 1000 
+Sigma <- matrix(c(1.0, 0.75, 0.75, 0.75, 1.0, 0.95, 0.75, 0.95, 1.0), 3, 3) 
+dat <- MASS::mvrnorm(n = 100, c(0, 0, 0), Sigma) |> 
+  data.frame() |> setNames(c("y", "x_1", "x_2")) 
+``` 
+Use the __caret__ package to partition into a test and training set of equal size. Compare the RMSE when using just `x_1`, just `x_2`, and both `x_1` and `x_2` Train a linear model and report the RMSE.  
+
+
+```{r}
+y <- dat$y 
+test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE) 
+train_set <- dat |> slice(-test_index) 
+test_set <- dat |> slice(test_index) 
+
+# Just using x_1
+fit <- lm(y ~ x_1, data = train_set) 
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x_1
+model1_rmse<-sqrt(mean((y_hat - test_set$y)^2)) 
+
+
+# Just using x_2
+y <- dat$y 
+fit <- lm(y ~ x_2, data = train_set) 
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x_2 
+model2_rmse<-sqrt(mean((y_hat - test_set$y)^2)) 
+
+
+# Using x_1 and x_2
+y <- dat$y 
+fit <- lm(y ~ x_1 + x_2, data = train_set) 
+y_hat <- fit$coef[1] + fit$coef[2]*test_set$x_1 + fit$coef[3]*test_set$x_2
+model3_rmse<-sqrt(mean((y_hat - test_set$y)^2)) 
+
+
+model1_rmse
+model2_rmse
+model3_rmse
+```
+Model 1 (Y ~ X_1) RMSE: 0.6784633
+Model 2 (Y ~ X_2) RMSE: 0.6973262
+Model 3 (Y ~ X_1 + X_2) RMSE: 0.6889562
+(Noting that these values may change above due to the simulation, but roughly they should generally be in range of 0.6-0.8)
+Now including both covariates doesn't seem to help improve predict, the RMSE is similar when just using X_1 or X_2; may be because if the variables are correlated, then one doesn't explain more variability in the outcome over the other, so including both doesn't help overall
+
+
+8\. Compare the results in 6 and 7 and choose the statement you agree with: 
+*a. Adding extra predictors can improve RMSE substantially, but not when they are highly correlated with another predictor. *
+b. Adding extra predictors improves predictions equally in both exercises. 
+c. Adding extra predictors results in over fitting. 
+d. Unless we include all predictors, we have no predicting power. 
+
+
+## Exercises 
+1\. Define the following dataset: 
+```{r, eval = FALSE} 
+make_data <- function(n = 1000, p = 0.5,  
+                      mu_0 = 0, mu_1 = 2,  
+                      sigma_0 = 1,  sigma_1 = 1){ 
+  y <- rbinom(n, 1, p) 
+  f_0 <- rnorm(n, mu_0, sigma_0) 
+  f_1 <- rnorm(n, mu_1, sigma_1) 
+  x <- ifelse(y == 1, f_1, f_0) 
+  test_index <- createDataPartition(y, times = 1, p = 0.5, list = FALSE) 
+  list(train = data.frame(x = x, y = as.factor(y)) |>  
+         slice(-test_index), 
+       test = data.frame(x = x, y = as.factor(y)) |>  
+         slice(test_index)) 
+} 
+dat <- make_data() 
+
+``` 
+Note that we have defined a variable `x` that is predictive of a binary outcome `y`. 
+```{r, eval=FALSE} 
+dat$train |> ggplot(aes(x, color = y)) + geom_density() 
+``` 
+Compare the accuracy of linear regression and logistic regression.  
+```{r}
+y <- dat$train$y 
+
+# Linear model
+fit_linear <- dat$train %>% lm(as.numeric(as.character(y)) ~ x, data=.)
+y_hat_linear <- ifelse(predict(fit_linear, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+y_test<-dat$test$y
+mean(y_test == y_hat_linear) 
+
+# Logistic model
+fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
+y_hat_glm <- ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+y_test<-dat$test$y
+mean(y_hat_glm == y_test) # Prediction accuracy of the logistic model
+
+```
+
+
+2\. Repeat the simulation from exercise 1 100 times and compare the average accuracy for each method and notice they give practically the same answer. 
+
+```{r}
+
+
+accuracy_linear<-replicate(100, {
+    dat <- make_data() 
+    fit_linear <- dat$train %>% lm(as.numeric(as.character(y)) ~ x, data=.)
+    y_hat_linear <- ifelse(predict(fit_linear, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+    y_test<-dat$test$y
+    mean(y_test == y_hat_linear) 
+})
+
+hist(accuracy_linear)
+mean(accuracy_linear)
+sd(accuracy_linear)
+
+accuracy_logistic<-replicate(100, {
+  dat <- make_data() 
+  fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
+  y_hat_glm <- ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+  y_test<-dat$test$y
+  mean(y_hat_glm == y_test)
+})
+
+
+hist(accuracy_logistic)
+mean(accuracy_logistic)
+sd(accuracy_logistic)
+
+```
+
+
+3\. Generate 25 different datasets changing the difference between the two class: `delta <- seq(0, 3, len = 25)`. Plot accuracy versus `delta`. 
+
+```{r}
+set.seed(1)
+delta <- seq(0, 3, len = 25)
+res <- sapply(delta, function(d){
+    dat <- make_data(mu_1 = d)
+    fit_glm <- dat$train %>% glm(y ~ x, family = "binomial", data = .)
+    y_hat_glm <- ifelse(predict(fit_glm, dat$test) > 0.5, 1, 0) %>% factor(levels = c(0, 1))
+    mean(y_hat_glm == dat$test$y)
+})
+qplot(delta, res)
+```
+ 
+## Exercises 
+1\. Run the following command to define the `co2_wide` object: 
+```{r, eval=FALSE} 
+co2_wide <- data.frame(matrix(co2, ncol = 12, byrow = TRUE)) |>  
+  setNames(1:12) |> 
+  mutate(year = as.character(1959:1997)) 
+``` 
+Use the `pivot_longer` function to wrangle this into a tidy dataset. Call the column with the CO2 measurements `co2` and call the month column `month`. Call the resulting object `co2_tidy`. 
+```{r}
+co2_wide
+co2_tidy <- co2_wide|> pivot_longer(1:12,names_to = "month")
+co2_tidy
+```
+
+2\. Plot CO2 versus month with a different curve for each year using this code: 
+```{r, eval=FALSE} 
+co2_tidy |> ggplot(aes(month, co2, color = year)) + geom_line() 
+``` 
+If the expected plot is not made, it is probably because `co2_tidy$month` is not numeric: 
+```{r, eval=FALSE} 
+class(co2_tidy$month) 
+``` 
+Rewrite your code to make sure the month column is numeric. Then make the plot.
+```{r}
+co2_tidy <- co2_wide|> pivot_longer(1:12,names_to = "month") |> mutate(month = as.numeric(month))
+co2_tidy
+class(co2_tidy$month)
+co2_tidy |> ggplot(aes(month, co2, color = year)) + geom_line() 
+```
+
+
+3\. What do we learn from this plot?  
+a. CO2 measures increase monotonically from 1959 to 1997. 
+b. CO2 measures are higher in the summer and the yearly average increased from 1959 to 1997. *this is the correct answer*
+c. CO2 measures appear constant and random variability explains the differences. 
+c. CO2 measures do not have a seasonal trend. 
+4\. Now load the `admissions` data set, which contains admission information for men and women across six majors and keep only the admitted percentage column: 
+```{r, eval=FALSE} 
+library(dslabs)
+load(admissions) 
+dat <- admissions |> select(-applicants) 
+``` 
+If we think of an observation as a major, and that each observation has two variables (men admitted percentage and women admitted percentage) then this is not tidy. Use the `pivot_wider` function to wrangle into tidy shape: one row for each major. 
+```{r}
+dat |> pivot_wider(names_from = gender, values_from = admitted)
+```
+
+
+5\. Now we will try a more advanced wrangling challenge. We want to wrangle the admissions data so that for each major we have 4 observations: `admitted_men`, `admitted_women`, `applicants_men` and `applicants_women`.  The _trick_ we perform here is actually quite common: first use `pivot_longer` to generate an intermediate data frame and then `pivot_wider` to obtain the tidy data we want. We will go step by step in this and the next two exercises. 
+Use the `pivot_longer` function to create a `tmp` data.frame with a column containing the type of observation `admitted` or `applicants`. Call the new columns `name` and `value`.  
+```{r}
+admissions
+tmp <- admissions |> pivot_longer(cols = c("admitted", "applicants"), names_to = "name", values_to = "value")
+tmp
+```
+
+6\. Now you have an object `tmp` with columns `major`,  `gender`, `name` and  `value`. Note that if you combine the `name` and `gender`, we get the column names we want: `admitted_men`, `admitted_women`, `applicants_men` and `applicants_women`. Use the function `unite` to create a new column called `column_name`. 
+```{r}
+tmp<- tmp |> unite(column_name, gender, name)
+tmp
+```
+
+7\. Now use the `pivot_wider` function to generate the tidy data with four variables for each major. 
+```{r}
+tmp <- tmp |> pivot_wider(names_from = column_name, values_from = value)
+tmp
+```
+
+
+8\. Now use the pipe to write a line of code that turns `admissions` to the table  produced in the previous exercise. 
+```{r}
+admissions |> pivot_longer(cols = c("admitted", "applicants"), names_to = "name", values_to = "value") |> 
+  unite(column_name, gender, name) |> 
+  pivot_wider(names_from = column_name, values_from = value)
+
+```
+
+
+
+ 
+## Exercises 
+1\. In the wrangling part of this book, we used the code below to obtain mortality counts for Puerto Rico for 2015-2018. 
+```{r, eval=FALSE} 
+library(tidyverse) 
+library(lubridate) 
+library(purrr) 
+library(pdftools) 
+library(dslabs) 
+fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf", 
+                  package="dslabs") 
+dat <- map_df(str_split(pdf_text(fn), "\n"), function(s){ 
+  s <- str_trim(s) 
+  header_index <- str_which(s, "2015")[1] 
+  tmp <- str_split(s[header_index], "\\s+", simplify = TRUE) 
+  month <- tmp[1] 
+  header <- tmp[-1] 
+  tail_index  <- str_which(s, "Total") 
+  n <- str_count(s, "\\d+") 
+  out <- c(1:header_index, which(n == 1),  
+           which(n >= 28), tail_index:length(s)) 
+  s[-out] %>%  str_remove_all("[^\\d\\s]") %>% str_trim() %>% 
+    str_split_fixed("\\s+", n = 6) %>% .[,1:5] %>% as_tibble() %>%  
+    setNames(c("day", header)) %>% 
+    mutate(month = month, day = as.numeric(day)) %>% 
+    pivot_longer(-c(day, month), names_to = "year", values_to = "deaths") %>% 
+    mutate(deaths = as.numeric(deaths)) 
+}) %>% 
+  mutate(month = recode(month,  
+                        "JAN" = 1, "FEB" = 2, "MAR" = 3,  
+                        "APR" = 4, "MAY" = 5, "JUN" = 6,  
+                        "JUL" = 7, "AGO" = 8, "SEP" = 9,  
+                        "OCT" = 10, "NOV" = 11, "DEC" = 12)) %>% 
+  mutate(date = make_date(year, month, day)) %>% 
+  filter(date <= "2018-05-01") 
+``` 
+Use the `loess` function to obtain a smooth estimate of the expected number of deaths as a function of date. Plot this resulting smooth function. Make the span about two months long. 
+
+```{r}
+dat
+?loess
+any(is.na(dat$death))
+
+myloess <- loess(deaths ~ as.numeric(date), dat, span = 60/as.numeric(diff(range(dat$date))))
+myloess
+#plot(myloess)
+
+dat %>% mutate(prediction = predict(myloess, as.numeric(date))) %>%
+  ggplot(aes(x = date)) +
+  geom_point(aes(y = deaths)) + 
+  geom_line(aes(y = prediction), color = "blue") # bc blue is mai-han's fave color
+
+dat %>% 
+  ggplot(aes(x = date, y = deaths)) +
+  geom_point() + 
+  geom_smooth(method='loess', span = 60/as.numeric(diff(range(dat$date))))
+
+```
+
+2\. Plot the smooth estimates against day of the year, all on the same plot but with different colors. 
+```{r}
+# dat %>% mutate(prediction = predict(myloess, as.numeric(date)),
+#                daymonth = as.Date(date, "%m-%d")) %>%
+#   ggplot() +
+#   geom_point(aes(x = daymonth, y = deaths)) + 
+#   geom_line(aes(x = daymonth, y = prediction, color = year)) 
+
+dat %>% mutate(prediction = predict(myloess, as.numeric(date)),
+                       daymonth2 = as.numeric(date) - (as.numeric(year)-2015)*365 ) %>% 
+  ggplot() + 
+  geom_line(aes(x = daymonth2, y = prediction, color = year))
+
+```
+
+
+3\. Suppose we want to predict 2s and 7s in our `mnist_27` dataset with just the second covariate. Can we do this? On first inspection it appears the data does not have much predictive power. In fact, if we fit a regular logistic regression, the coefficient for `x_2` is not significant! 
+```{r, eval = FALSE} 
+library(broom) 
+library(dslabs) 
+data("mnist_27") 
+mnist_27$train |>  
+  glm(y ~ x_2, family = "binomial", data = _) |>  
+  tidy() 
+``` 
+Plotting a scatterplot here is not useful since `y` is binary: 
+```{r, eval = FALSE} 
+qplot(x_2, y, data = mnist_27$train) 
+``` 
+Fit a loess line to the data above and plot the results. Notice that there is predictive power, except the conditional probability is not linear. 
+
+```{r}
+head(mnist_27$train)
+
+ggplot(data = mnist_27$train,aes(x = x_2, y = y)) +
+  geom_point( ) +
+  geom_smooth(method='loess')
+
+# I'm not sure about this answer. 
+
+#maddy attempt
+my_loess2<-loess(as.numeric(y) ~ as.numeric(x_2), mnist_27$train)#default span is 0.75
+mnist_27$test |> 
+  mutate(prediction = predict(my_loess2, as.numeric(x_2))) |>
+  ggplot(aes(x=x_2)) + 
+  geom_point(aes(y = y)) + 
+  geom_line(aes(y = prediction), color = 'red')
+
+```
+
+## Exercises 
+1\. Complete all lessons and exercises in the [https://regexone.com/](https://regexone.com/) online interactive tutorial. 
+2\. In the `extdata` directory of the __dslabs__ package, you will find a PDF file containing daily mortality data for Puerto Rico from Jan 1, 2015 to May 31, 2018. You can find the file like this: 
+```{r, eval=FALSE} 
+fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf", 
+                  package="dslabs") 
+``` 
+Find and open the file or open it directly from RStudio. On a Mac, you can type: 
+```{r, eval = FALSE} 
+system2("open", args = fn) 
+``` 
+and on Windows, you can type: 
+```{r, eval = FALSE} 
+system("cmd.exe", input = paste("start", fn)) 
+read.
+``` 
+Which of the following best describes this file: 
+a. It is a table. Extracting the data will be easy. 
+b. It is a report written in prose.  Extracting the data will be impossible. 
+c. It is a report combining graphs and tables. Extracting the data seems possible. 
+d. It shows graphs of the data. Extracting the data will be difficult. 
+
+# ANSWER: c
+
+3\. We are going to create a tidy dataset with each row representing one observation. The variables in this dataset will be year, month, day, and deaths.  
+Start by installing and loading the __pdftools__ package: 
+```{r, eval= FALSE} 
+# install.packages("pdftools") 
+library(pdftools) 
+``` 
+Now read-in `fn` using the `pdf_text` function and store the results in an object called `txt`. Which of the following best describes what you see in `txt`? 
+```{r}
+txt <- pdf_text(fn)
+
+# head(txt)
+
+class(txt)
+length(txt)
+```
+
+a. A table with the mortality data. 
+b. A character string of length 12. Each entry represents the text in each page. The mortality data is in there somewhere. 
+c. A character string with one entry containing all the information in the PDF file. 
+d. An html document. 
+
+# ANSWER: b
+
+
+4\. Extract the ninth page of the PDF file from the object `txt`, then use the `str_split` from the __stringr__ package so that you have each line in a different entry. Call this string vector `s`. Then look at the result and choose the one that best describes what you see. 
+```{r}
+library(stringr)
+s <- str_split(txt[9], pattern="\n")
+s
+```
+
+a. It is an empty string. 
+b. I can see the figure shown in page 1. 
+c. It is a tidy table. 
+d. I can see the table! But there is a bunch of other stuff we need to get rid of. 
+
+# ANSWER: d
+
+
+5\. What kind of object is `s` and how many entries does it have? 
+```{r}
+class(s)
+length(s)
+# ANSWER: s is a list with 1 entry
+```
+
+6\. We see that the output is a list with one component. Redefine `s` to be the first entry of the list. What kind of object is `s` and how many entries does it have? 
+```{r}
+s <- s[[1]]
+class(s)
+length(s)
+#ANSWER: s is a character string with 41 entries
+```
+
+7\. When inspecting the string we obtained above, we see a common problem: white space before and after the other characters. Trimming is a common first step in string processing. These extra spaces will eventually make splitting the strings hard so we start by removing them. We learned about the command `str_trim` that removes spaces at the start or end of the strings. Use this function to trim `s`. 
+```{r}
+s <- str_trim(s)
+# or 
+# s <- str_trim(s, side = 'both)
+```
+
+
+8\. We want to extract the numbers from the strings stored in `s`. However, there are many non-numeric characters that will get in the way. We can remove these, but before doing this we want to preserve the string with the column header, which includes the month abbreviation.  
+Use the `str_which` function to find the rows with a header. Save these results to `header_index`. Hint: find the first string that matches the pattern `2015` using the `str_which` function. 
+```{r}
+header_index <- str_which(s, "2015")[1]
+header_index
+```
+9\. Now we are going to define two objects: `month` will store the month and `header` will store the column names. Identify which row contains the header of the table. Save the content of the row into an object called `header`, then use `str_split` to help define the two objects we need. Hints: the separator here is one or more spaces. Also, consider using the `simplify` argument. 
+```{r}
+header <- s[header_index]
+month  <- str_split(header, pattern="\\s+")[[1]][1]
+header <- str_split(header, pattern="\\s+")[[1]][-1]
+```
+
+10\. Notice that towards the end of the page you see a _totals_ row followed by rows with other summary statistics. Create an object called `tail_index` with the index of the _totals_ entry.
+```{r}
+tail_index <- str_which(s, "Total")
+tail_index
+```
+
+11\. Because our PDF page includes graphs with numbers, some of our rows have just one number (from the y-axis of the plot). Use the `str_count` function to create an object `n` with the number of numbers in each each row. Hint: you can write a regex for number like this `\\d+`. 
+```{r}
+n <- str_count(s, pattern = "\\d+") 
+```
+
+
+12\. We are now ready to remove entries from rows that we know we don't need. The entry `header_index` and everything before it should be removed. Entries for which `n` is 1 should also be removed, and the entry `tail_index` and everything that comes after it should be removed as well. 
+```{r}
+s <- s[-c(1:header_index, which(n==1), tail_index:length(s))]
+```
+
+
+13\. Now we are ready to remove all the non-numeric entries. Do this using regex and the `str_remove_all` function. Hint: remember that in regex, using the upper case version of a special character usually means the opposite. So `\\D` means "not a digit". Remember you also want to keep spaces. 
+```{r}
+s <-str_remove_all(s, regex("[A-Z].+"))
+s
+```
+
+14\. To convert the strings into a table, use the `str_split_fixed` function. Convert `s` into a data matrix with just the day and death count data. Hints: note that the separator is one or more spaces. Make the argument `n` a value that limits the number of columns to the values in the 4 columns and the last column captures all the extra stuff. Then keep only the first four columns. 
+```{r}
+s <- str_split_fixed(s, "\\s+", n=5)
+s[,5] <- str_split(s[,5], pattern="\\s+", simplify=T)[,1]
+s
+```
+
+
+15\. Now you are almost ready to finish. Add column names to the matrix, including one called `day`. Also, add a column with the month. Call the resulting object `dat`. Finally, make sure the day is an integer not a character. Hint: use only the first five columns. 
+```{r}
+colnames(s) <- c("day", header)
+dat <- as.data.frame(s)
+dat$month <- month
+dat$day <- as.integer(dat$day)
+
+```
+
+
+16\. Now finish it up by tidying `tab` with the `pivot_longer_ function. 
+```{r}
+library(tidyverse)
+dat <- pivot_longer(dat, c("2015", "2016", "2017", "2018"), names_to="year", values_to="deaths")
+dat$deaths <- as.integer(dat$deaths)
+dat
+```
+
+
+17\. Make a plot of deaths versus day with color to denote year. Exclude 2018 since we do not have data for the entire year. 
+```{r}
+library(ggplot2)
+dat |>
+  filter(year != "2018") |>
+  ggplot(aes(x=day, y=deaths, group=year, color=year))+
+  geom_line() +
+  geom_point()+
+  ylim(c(0, 140))+
+  theme_bw()
+
+```
+
+
+18\. Now that we have wrangled this data step-by-step, put it all together in one R chunk, using the pipe as much as possible. Hint: first define the indexes, then write one line of code that does all the string processing. 
+```{r}
+
+```
+
+```
+
+
+19\. Advanced: let's return to the MLB Payroll example from the web scraping section. Use what you have learned in the web scraping and string processing chapters to extract the payroll for the New York Yankees, Boston Red Sox, and Oakland A's and plot them as a function of time. 
+
+ 
