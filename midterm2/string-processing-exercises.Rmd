@@ -32,7 +32,8 @@ Now read-in `fn` using the `pdf_text` function and store the results in an objec
 ```{r}
 txt <- pdf_text(fn)
 
-# head(txt)
+str(txt)
+#head(txt)
 
 class(txt)
 length(txt)
@@ -89,12 +90,20 @@ Use the `str_which` function to find the rows with a header. Save these results 
 ```{r}
 header_index <- str_which(s, "2015")[1]
 header_index
+
+#another way to do it
+#header_index <- str_which(s, pattern ='2015')[1]
 ```
 9\. Now we are going to define two objects: `month` will store the month and `header` will store the column names. Identify which row contains the header of the table. Save the content of the row into an object called `header`, then use `str_split` to help define the two objects we need. Hints: the separator here is one or more spaces. Also, consider using the `simplify` argument. 
 ```{r}
 header <- s[header_index]
 month  <- str_split(header, pattern="\\s+")[[1]][1]
 header <- str_split(header, pattern="\\s+")[[1]][-1]
+
+
+#another way to code this
+#header <- s[header_index]
+#str_split(s[-c(1:3)], '\\s+', simplify = T)
 ```
 
 10\. Notice that towards the end of the page you see a _totals_ row followed by rows with other summary statistics. Create an object called `tail_index` with the index of the _totals_ entry.
@@ -126,6 +135,10 @@ s
 s <- str_split_fixed(s, "\\s+", n=5)
 s[,5] <- str_split(s[,5], pattern="\\s+", simplify=T)[,1]
 s
+
+
+#code from lab
+#str_split_fixed(s,pattern = '\\s+', n =5)
 ```
 
 
