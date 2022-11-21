@@ -2,6 +2,7 @@
 1\. Install and load the __Lahman__ library. This database includes data related to baseball teams. It includes summary statistics about how the players performed on offense and defense for several years. It also includes personal information about the players. 
 The `Batting` data frame contains the offensive statistics for all players for many years. You can see, for example, the top 10 hitters by running this code: 
 ```{r, eval=FALSE} 
+#install.packages('Lahman')
 library(Lahman) 
 top <- Batting |>  
   filter(yearID == 2016) |> 
@@ -21,8 +22,10 @@ We can see column names `nameFirst` and `nameLast`. Use the `left_join` function
 top <- left_join(top, People, by="playerID") |> 
   select(playerID, nameFirst, nameLast, HR)
 head(top)
-```
 
+#left join means including all rows in x (which is 'top' here)
+#?left_join
+```
 
 2\. Now use the `Salaries` data frame to add each player's salary to the table you created in exercise 1. Note that salaries are different every year so make sure to filter for the year 2016, then use `right_join`. This time show first name, last name, team, HR, and salary.
 ```{r}
@@ -30,6 +33,8 @@ data(Salaries)
 sal <- Salaries |> filter(yearID == "2016") |> select(playerID, salary)
 right_join(top, sal, by= "playerID")
 #right join takes the row names from the second dataframe, but it doesn't seem to have a big effect here?
+
+#PBR: not sure what you mean when you said it doesn't have a big effect but this seems like the correct answer to me! The 'top' dataframe had 10 observations and 4 variables. The filtered 'sal' dataframe has 853 obs and 2 variables. the final dataset has 853 observations and 5 variables which is correct!
 ```
 
 3\. In a previous exercise, we created a tidy version of the `co2` dataset: 
@@ -49,6 +54,7 @@ head(yearly_avg)
 
 4\. Now use the `left_join` function to add the yearly average to the `co2_wide` dataset. Then compute the residuals: observed co2 measure - yearly average. 
 ```{r}
+#they have year in common
 comb <- left_join(co2_wide, yearly_avg, by = "year") |>
   mutate(res = co2 - yearly_avg)
 comb
@@ -58,6 +64,15 @@ comb
 5\. Make a plot of the seasonal trends by year but only after removing the year effect. 
 
 ```{r}
+#PBR: I watched the lab recording and this is code for what they were looking for which looks like the second plot you have here except yours is nicer! 
+library(ggplot2)
+comb |>
+  ggplot(aes(x=month, y=res)) +
+  geom_point() +
+  geom_line(aes(group=factor(year))) +
+  theme_classic()
+
+
 library(ggplot2)
 #not totally sure what they're asking for here, will plot a few different things
 comb |> 
@@ -67,9 +82,6 @@ comb |>
 comb |> 
   group_by(year, month) |>
   ggplot(aes(month, res, group=year, color = year)) + geom_line()
-
-
-  
 ```
 
 

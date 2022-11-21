@@ -1,6 +1,8 @@
 ## Exercises 
 1\. In 1999, in England, Sally Clark^[https://en.wikipedia.org/wiki/Sally_Clark] was found guilty of the murder of two of her sons. Both infants were found dead in the morning, one in 1996 and another in 1998. In both cases, she claimed the cause of death was sudden infant death syndrome (SIDS). No evidence of physical harm was found on the two infants so the main piece of evidence against her was the testimony of Professor Sir Roy Meadow, who testified that the chances of two infants dying of SIDS was 1 in 73 million. He arrived at this figure by finding that the rate of SIDS was 1 in 8,500 and then calculating that the chance of two SIDS cases was 8,500 $\times$ 8,500 $\approx$ 73 million. Which of the following do you agree with? 
 a. Sir Meadow assumed that the probability of the second son being affected by SIDS was independent of the first son being affected, thereby ignoring possible genetic causes. If genetics plays a role then: $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) < \mbox{P}r(\mbox{first case of SIDS})$. 
+#PBR: not sure if this matters but there is a typo here. It should be greater than.
+
 b. Nothing. The multiplication rule always applies in this way: $\mbox{Pr}(A \mbox{ and } B) =\mbox{Pr}(A)\mbox{Pr}(B)$ 
 c. Sir Meadow is an expert and we should trust his calculations. 
 d. Numbers don't lie. 
@@ -8,6 +10,10 @@ d. Numbers don't lie.
 Answer: a
 
 2\. Let's assume that there is in fact a genetic component to SIDS and the probability of $\mbox{Pr}(\mbox{second case of SIDS} \mid \mbox{first case of SIDS}) = 1/100$, is much higher than 1 in 8,500. What is the probability of both of her sons dying of SIDS? 
+
+```{r}
+(1/8500) * (1/100)
+```
 
 Answer: (1/100)*(1/8500) = 1/850000 or 1.7641e-06
 
@@ -19,7 +25,8 @@ ANSWER:
 A: Mother is a son-murdering psychopath
 B: Two of her children are found dead with no evidence of physical harm 
 
-(Insert Bayes Theorem)
+Pr(A|B) = [Pr(B|A)*Pr(A)]/Pr(B)
+
 
 Probability mother is a son-murdering psychopath GIVEN that two of her children found dead wth no evidence of physical harm 
 
@@ -29,7 +36,17 @@ $$
 $$  
 with A = two of her children are found dead with no evidence of physical harm and B = a mother is a son-murdering psychopath = 0.50. Assume that the rate of son-murdering psychopaths mothers is 1 in 1,000,000.     According to Bayes' theorem, what is the probability of $\mbox{Pr}(B \mid A)$ ? 
 
-Answer: Probablity of $\mbox{Pr}(B \mid A)$ = 0.425
+Answer: Probability of $\mbox{Pr}(B \mid A)$ = 0.425
+
+Bayes theorem
+
+  Pr(A|B) = [Pr(B|A)*Pr(A)]/Pr(B)
+  
+  Pr(A|B)Pr(B) = Pr(B|A)Pr(A)
+  
+  [Pr(A|B)Pr(B)]/Pr(A) = Pr(B|A)
+  
+  Pr(B|A) = [Pr(A|B)Pr(B)]/Pr(A)
 
 ```{r}
 #likelihood
@@ -94,6 +111,12 @@ tau <- 0.01
 sigma <- results$se
 Y <- results$avg
 
+#  Using the posterior probability function
+#  E(p|Y=y) =Bmu + (1-B)y
+#  with B= sigma^2/ [sigma^2 + r^2]
+
+
+
 #weighted average of beta
 
 B<- sigma^2/(sigma^2 +tau^2)
@@ -112,6 +135,9 @@ exp_ps = 0.002731286
 
 
 9\. Now compute the standard deviation of the posterior distribution. 
+
+
+SE(p|y)^2 = 1/ [1/sigmasquared+1/tausquared]
 
 ```{r}
 se_post <-sqrt(1/(1/sigma^2 + 1/tau^2))
